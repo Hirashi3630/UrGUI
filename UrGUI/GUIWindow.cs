@@ -1,5 +1,4 @@
-﻿using SuckAssembly.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UrGUI.Core.Utils;
 
