@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UrGUI.Core.Utils;
+using UrGUI.Utils;
 
-namespace UrGUI.Core
+namespace UrGUI
 {
     public class GUIWindow
     {
