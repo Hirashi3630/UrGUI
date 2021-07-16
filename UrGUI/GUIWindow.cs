@@ -316,10 +316,10 @@ namespace UrGUI
 
                 // # COLOR PICKER #
                 // draw preview button
-                var oldColor = GUI.color;
-                GUI.color = clr;
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
                 GUI.Label(labelRect, displayedString);
+                var oldColor = GUI.color;
+                GUI.color = clr;
                 if (GUI.Button(previewButtonRect, string.Empty, whiteButtonGUIStyle))
                 {
                     IsPickerOpen = !IsPickerOpen;
@@ -372,11 +372,22 @@ namespace UrGUI
             public System.Action<int> onValueChanged;
             public Dictionary<int, string> list;
             public int value;
-            private bool IsDropDownOpen { get => _isDropDownOpen; set { _isDropDownOpen = value; GUIWindow.AllWindowsDisabled = value; } }
+            private bool IsDropDownOpen { get => _isDropDownOpen;
+                set
+                {
+                    _isDropDownOpen = value;
+                    GUIWindow.AllWindowsDisabled = value;
+                    if (value)
+                        ActiveOptionMenu = DrawDropDown;
+                    else
+                        ActiveOptionMenu = null;
+                }
+            }
             private bool _isDropDownOpen = false;
             private Vector2 scrollPos;
             private Rect rect;
             private Rect selectedRect;
+            private static GUIStyle DropDownOptionGUIStyle = null; //= GUI.skin.label;
 
             internal WDropDown(System.Action<int> onValueChanged, int value, Dictionary<int, string> list,
                 string displayedString)
@@ -389,6 +400,15 @@ namespace UrGUI
 
             internal override void Draw(Rect r)
             {
+                // init
+                if (DropDownOptionGUIStyle == null)
+                {
+                    DropDownOptionGUIStyle = GUI.skin.label;
+                    DropDownOptionGUIStyle.hover.textColor = Color.gray;
+                    DropDownOptionGUIStyle.onHover.textColor = Color.gray;
+                }
+
+                // calc all rects
                 rect = r;
                 Rect labelRect = rect;
                 labelRect.width /= 3f;
@@ -402,13 +422,7 @@ namespace UrGUI
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
                 GUI.Label(labelRect, displayedString);
                 if (GUI.Button(selectedRect, string.Empty))
-                {
                     IsDropDownOpen = !IsDropDownOpen;
-                    if (IsDropDownOpen)
-                        ActiveOptionMenu = DrawDropDown;
-                    else
-                        ActiveOptionMenu = null;
-                }
                 GUI.Label(selectedLabelRect, list[value]);
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
 
@@ -439,7 +453,7 @@ namespace UrGUI
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    if (GUI.Button(new Rect(0, i * rect.height, pRect.width - 15, rect.height), list[i], GUI.skin.label)) // 15 is width of scrollbar
+                    if (GUI.Button(new Rect(0, i * rect.height, pRect.width - 15, rect.height), list[i], DropDownOptionGUIStyle)) // 15 is width of scrollbar
                     {
                         value = i;
                         IsDropDownOpen = false;
