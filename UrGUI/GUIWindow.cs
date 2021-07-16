@@ -8,14 +8,19 @@ namespace UrGUI
     {
         protected GUIWindow() { }
 
+        public static readonly GUIStyle whiteButtonGUIStyle = new GUIStyle { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
+
         public static bool AllWindowsDisabled = false;
         public static bool AnyWindowDragging = false;
+        public static System.Action ActiveOptionMenu = null;
+
         private bool isActive, isDragging;
         private string windowTitle;
-        private float x, y, width, height, margin, controlHeight, controlSpace; 
+        private float x, y, width, height, margin, controlHeight, controlSpace;
 
-        private float nextControlY; 
+        private float nextControlY;
         private List<WControl> controls;
+
 
         public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight, float margin, float controlHeight, float controlSpace)
         {
@@ -30,7 +35,7 @@ namespace UrGUI
             b.controlHeight = controlHeight;
             b.controlSpace = controlSpace;
 
-            
+
             b.controls = new List<WControl>();
 
             return b;
@@ -70,7 +75,7 @@ namespace UrGUI
             // check if window isn't outside of screen
             if (x < 0) x = 0;
             if (y < 0) y = 0;
-            if (x + width  > Screen.width) x = Screen.width - width;
+            if (x + width > Screen.width) x = Screen.width - width;
             if (y + height > Screen.height) y = Screen.height - height;
 
             // reset nextControlY
@@ -89,6 +94,10 @@ namespace UrGUI
 
             // reset GUI enabled
             GUI.enabled = true;
+
+            // draw active option menu
+            if (ActiveOptionMenu != null)
+                ActiveOptionMenu();
         }
 
         private Rect NextControlRect()
@@ -120,7 +129,7 @@ namespace UrGUI
         public static WControl Button(string text, System.Action onPressed)
         {
             var c = new WButton(onPressed, text);
-            
+
             return c;
         }
 
@@ -147,6 +156,13 @@ namespace UrGUI
             return c;
         }
 
+        public static WControl DropDown(string text, System.Action<int> onValueChanged, int value, Dictionary<int, string> list)
+        {
+            var c = new WDropDown(onValueChanged, value, list, text);
+
+            return c;
+        }
+
         internal class WSpace : WControl
         {
             internal WSpace() : base(string.Empty) { }
@@ -161,7 +177,7 @@ namespace UrGUI
 
             internal WLabel(
                 string displayedString, GUIFormatting.AlignType alignment)
-                : base (displayedString)
+                : base(displayedString)
             {
                 this.alignment = alignment;
             }
@@ -183,7 +199,7 @@ namespace UrGUI
             private System.Action onPressed;
 
             internal WButton(System.Action onPressed,
-                string displayedString) 
+                string displayedString)
                 : base(displayedString)
             {
                 this.onPressed = onPressed;
@@ -280,8 +296,7 @@ namespace UrGUI
             private System.Action<Color> onValueChanged;
             private bool IsPickerOpen { get => _isPickerOpen; set { _isPickerOpen = value; GUIWindow.AllWindowsDisabled = value; } }
             private bool _isPickerOpen = false;
-            private static readonly GUIStyle whiteButtonGUIStyle = new GUIStyle { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
-
+            private Rect rect;
             internal WColorPicker(System.Action<Color> onValueChanged, Color clr,
                 string displayedString)
                 : base(displayedString)
@@ -292,57 +307,152 @@ namespace UrGUI
 
             internal override void Draw(Rect r)
             {
-                Rect previewButtonRect = r;
+                rect = r;
+                Rect previewButtonRect = rect;
                 previewButtonRect.width /= 3f;
                 previewButtonRect.x += previewButtonRect.width * 2f;
-                Rect labelRect = r;
+                Rect labelRect = rect;
                 labelRect.width -= previewButtonRect.width * 2f;
-
-                // # LABEL #
-                GUI.Label(labelRect, displayedString);
 
                 // # COLOR PICKER #
                 // draw preview button
                 var oldColor = GUI.color;
                 GUI.color = clr;
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
+                GUI.Label(labelRect, displayedString);
                 if (GUI.Button(previewButtonRect, string.Empty, whiteButtonGUIStyle))
+                {
                     IsPickerOpen = !IsPickerOpen;
+
+                    if (IsPickerOpen)
+                        ActiveOptionMenu = DrawPicker;
+                    else
+                        ActiveOptionMenu = null;
+                }
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
                 GUI.color = oldColor;
+            }
 
-                // draw color picker
+            internal void DrawPicker()
+            {
                 // TODO: refactor this, to: future me
-                if (IsPickerOpen)
+                // main box
+                Rect pRect = new Rect(rect.x + rect.width - 200, rect.height + rect.y, 200, 80); // picker rect
+                var oldColor = GUI.color;
+                GUI.color = Color.black;
+                GUI.Box(pRect, "", whiteButtonGUIStyle);
+                GUI.color = oldColor;
+
+                // inside
+                GUI.BeginGroup(pRect);
+                // labels
+                GUI.Label(new Rect(0, 0, 20, 20), "R: ");
+                GUI.Label(new Rect(0, 20, 20, 20), "G: ");
+                GUI.Label(new Rect(0, 40, 20, 20), "B: ");
+                GUI.Label(new Rect(0, 60, 20, 20), "A: ");
+
+                // sliders
+                clr.r = GUI.HorizontalSlider(new Rect(20, 5, pRect.width - 20 - 25, 20), clr.r, 0, 1);
+                clr.g = GUI.HorizontalSlider(new Rect(20, 25, pRect.width - 20 - 25, 20), clr.g, 0, 1);
+                clr.b = GUI.HorizontalSlider(new Rect(20, 45, pRect.width - 20 - 25, 20), clr.b, 0, 1);
+                clr.a = GUI.HorizontalSlider(new Rect(20, 65, pRect.width - 20 - 25, 20), clr.a, 0, 1);
+
+                // values
+                GUI.Label(new Rect(pRect.width - 25, 0, 25, 20), clr.r.ToString("0.00"));
+                GUI.Label(new Rect(pRect.width - 25, 20, 25, 20), clr.g.ToString("0.00"));
+                GUI.Label(new Rect(pRect.width - 25, 40, 25, 20), clr.b.ToString("0.00"));
+                GUI.Label(new Rect(pRect.width - 25, 60, 25, 20), clr.a.ToString("0.00"));
+                GUI.EndGroup();
+            }
+        }
+
+        internal class WDropDown : WControl
+        {
+
+            public System.Action<int> onValueChanged;
+            public Dictionary<int, string> list;
+            public int value;
+            private bool IsDropDownOpen { get => _isDropDownOpen; set { _isDropDownOpen = value; GUIWindow.AllWindowsDisabled = value; } }
+            private bool _isDropDownOpen = false;
+            private Vector2 scrollPos;
+            private Rect rect;
+            private Rect selectedRect;
+
+            internal WDropDown(System.Action<int> onValueChanged, int value, Dictionary<int, string> list,
+                string displayedString)
+                : base(displayedString)
+            {
+                this.onValueChanged = onValueChanged;
+                this.value = value;
+                this.list = list;
+            }
+
+            internal override void Draw(Rect r)
+            {
+                rect = r;
+                Rect labelRect = rect;
+                labelRect.width /= 3f;
+                selectedRect = rect;
+                selectedRect.x += labelRect.width;
+                selectedRect.width = labelRect.width * 2f;
+                Rect selectedLabelRect = selectedRect;
+                selectedLabelRect.x += 5f; // offset
+                selectedLabelRect.width -= 5f; // offset
+
+                if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
+                GUI.Label(labelRect, displayedString);
+                if (GUI.Button(selectedRect, string.Empty))
                 {
-                    GUI.enabled = true;
-                    // main box
-                    Rect pRect = new Rect(r.x + r.width - 200, r.height + r.y, 200, 80); // picker rect
-                    GUI.Box(pRect, "");
-
-                    // inside
-                    GUI.BeginGroup(pRect);
-                    // labels
-                    GUI.Label(new Rect(0,  0, 20, 20), "R: ");
-                    GUI.Label(new Rect(0, 20, 20, 20), "G: ");
-                    GUI.Label(new Rect(0, 40, 20, 20), "B: ");
-                    GUI.Label(new Rect(0, 60, 20, 20), "A: ");
-                    
-                    // sliders
-                    clr.r = GUI.HorizontalSlider(new Rect(20,  5, pRect.width - 20 - 25, 20), clr.r, 0, 1);
-                    clr.g = GUI.HorizontalSlider(new Rect(20, 25, pRect.width - 20 - 25, 20), clr.g, 0, 1);
-                    clr.b = GUI.HorizontalSlider(new Rect(20, 45, pRect.width - 20 - 25, 20), clr.b, 0, 1);
-                    clr.a = GUI.HorizontalSlider(new Rect(20, 65, pRect.width - 20 - 25, 20), clr.a, 0, 1);
-
-                    // values
-                    GUI.Label(new Rect(pRect.width - 25,  0, 25, 20), clr.r.ToString("0.00"));
-                    GUI.Label(new Rect(pRect.width - 25, 20, 25, 20), clr.g.ToString("0.00"));
-                    GUI.Label(new Rect(pRect.width - 25, 40, 25, 20), clr.b.ToString("0.00"));
-                    GUI.Label(new Rect(pRect.width - 25, 60, 25, 20), clr.a.ToString("0.00"));
-                    GUI.EndGroup();
-
-                    GUI.enabled = false;
+                    IsDropDownOpen = !IsDropDownOpen;
+                    if (IsDropDownOpen)
+                        ActiveOptionMenu = DrawDropDown;
+                    else
+                        ActiveOptionMenu = null;
                 }
+                GUI.Label(selectedLabelRect, list[value]);
+                if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
+
+                // # DROP DOWN #
+                // draw dropdown
+                // TODO: refactor this, to: future me
+                
+
+
+            }
+
+            internal void DrawDropDown()
+            {
+                GUI.enabled = true;
+                // main box
+                Rect pRect = new Rect(selectedRect.x, selectedRect.y + selectedRect.height, selectedRect.width, rect.height * 4); // picker rect
+                var oldColor = GUI.color;
+                GUI.color = Color.black;
+                GUI.Box(pRect, "", whiteButtonGUIStyle);
+                GUI.color = oldColor;
+
+                // inside
+                GUI.BeginGroup(pRect);
+
+                scrollPos = GUI.BeginScrollView(
+                    new Rect(0, 0, pRect.width, pRect.height), scrollPos,
+                    new Rect(0, 0, 0, list.Count * rect.height));
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (GUI.Button(new Rect(0, i * rect.height, pRect.width - 15, rect.height), list[i], GUI.skin.label)) // 15 is width of scrollbar
+                    {
+                        value = i;
+                        IsDropDownOpen = false;
+                    }
+                }
+
+
+                // End the scroll view that we began above.
+                GUI.EndScrollView();
+
+                GUI.EndGroup();
+
+                GUI.enabled = false;
             }
         }
 
