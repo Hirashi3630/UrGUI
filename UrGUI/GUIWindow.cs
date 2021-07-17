@@ -294,7 +294,16 @@ namespace UrGUI
             public Color clr;
 
             private System.Action<Color> onValueChanged;
-            private bool IsPickerOpen { get => _isPickerOpen; set { _isPickerOpen = value; GUIWindow.AllWindowsDisabled = value; } }
+            private bool IsPickerOpen { get => _isPickerOpen; set
+                {
+                    _isPickerOpen = value;
+                    GUIWindow.AllWindowsDisabled = value;
+                    if (value)
+                        ActiveOptionMenu = DrawPicker;
+                    else
+                        ActiveOptionMenu = null;
+                }
+            }
             private bool _isPickerOpen = false;
             private Rect rect;
             internal WColorPicker(System.Action<Color> onValueChanged, Color clr,
@@ -321,14 +330,7 @@ namespace UrGUI
                 var oldColor = GUI.color;
                 GUI.color = clr;
                 if (GUI.Button(previewButtonRect, string.Empty, whiteButtonGUIStyle))
-                {
                     IsPickerOpen = !IsPickerOpen;
-
-                    if (IsPickerOpen)
-                        ActiveOptionMenu = DrawPicker;
-                    else
-                        ActiveOptionMenu = null;
-                }
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
                 GUI.color = oldColor;
             }
