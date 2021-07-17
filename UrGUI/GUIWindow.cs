@@ -16,6 +16,7 @@ namespace UrGUI
 
         private string windowTitle;
         private float x, y, width, height, margin, controlHeight, controlSpace;
+        private bool isDraggable;
 
         private bool isActive, isDragging;
 
@@ -23,7 +24,8 @@ namespace UrGUI
         private List<WControl> controls;
 
 
-        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight, float margin, float controlHeight, float controlSpace)
+        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight, float margin, float controlHeight, float controlSpace,
+            bool isDraggable = true)
         {
             GUIWindow b = new GUIWindow();
             b.isActive = true;
@@ -35,6 +37,7 @@ namespace UrGUI
             b.margin = margin;
             b.controlHeight = controlHeight;
             b.controlSpace = controlSpace;
+            b.isDraggable = isDraggable;
 
 
             b.controls = new List<WControl>();
@@ -52,24 +55,27 @@ namespace UrGUI
             // disable if it's required
             if (AllWindowsDisabled) GUI.enabled = false;
 
-            // mouse drag
-            if (!AnyWindowDragging || isDragging)
+            if (isDraggable)
             {
-                var e = Event.current;
-                if (e.type == EventType.MouseDown && new Rect(x, y, width, controlHeight * 1.25f).Contains(e.mousePosition))
+                // mouse drag
+                if (!AnyWindowDragging || isDragging)
                 {
-                    isDragging = true;
-                    AnyWindowDragging = true;
-                }
-                else if (e.type == EventType.MouseUp)
-                {
-                    isDragging = false;
-                    AnyWindowDragging = false;
-                }
-                if (e.type == EventType.MouseDrag && isDragging)
-                {
-                    x += e.delta.x;
-                    y += e.delta.y;
+                    var e = Event.current;
+                    if (e.type == EventType.MouseDown && new Rect(x, y, width, controlHeight * 1.25f).Contains(e.mousePosition))
+                    {
+                        isDragging = true;
+                        AnyWindowDragging = true;
+                    }
+                    else if (e.type == EventType.MouseUp)
+                    {
+                        isDragging = false;
+                        AnyWindowDragging = false;
+                    }
+                    if (e.type == EventType.MouseDrag && isDragging)
+                    {
+                        x += e.delta.x;
+                        y += e.delta.y;
+                    }
                 }
             }
 
