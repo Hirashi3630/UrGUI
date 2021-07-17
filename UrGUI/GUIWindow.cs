@@ -14,9 +14,10 @@ namespace UrGUI
         public static bool AnyWindowDragging = false;
         public static System.Action ActiveOptionMenu = null;
 
-        private bool isActive, isDragging;
         private string windowTitle;
         private float x, y, width, height, margin, controlHeight, controlSpace;
+
+        private bool isActive, isDragging;
 
         private float nextControlY;
         private List<WControl> controls;
@@ -107,6 +108,56 @@ namespace UrGUI
             return r;
         }
 
+        public void SaveCfg(string absolutePath)
+        {
+            INIParser ini = new INIParser();
+            ini.Open(absolutePath);
+
+            string sectionName = $"GUIWindow.{windowTitle}";
+            // write all values for GUIWindow
+            ini.WriteValue(sectionName, "windowTitle", windowTitle);
+            ini.WriteValue(sectionName, "x", x);
+            ini.WriteValue(sectionName, "y", y);
+            ini.WriteValue(sectionName, "width", width);
+            ini.WriteValue(sectionName, "height", height);
+            ini.WriteValue(sectionName, "margin", margin);
+            ini.WriteValue(sectionName, "controlHeight", controlHeight);
+            ini.WriteValue(sectionName, "controlSpace", controlSpace);
+            
+            // write all controls' values
+            for (int i = 0; i < controls.Count; i++)
+                controls[i].ExportData(i, sectionName, $"Control{i}.", ini);
+
+            // close and save
+            ini.Close();
+        }
+
+        public void LoadCfg(string absolutePath)
+        {
+            if (!System.IO.File.Exists(absolutePath)) return;
+
+            INIParser ini = new INIParser();
+            ini.Open(absolutePath);
+
+            string sectionName = $"GUIWindow.{windowTitle}";
+            // read all values for GUIWindow
+            windowTitle = ini.ReadValue(sectionName, "windowTitle", windowTitle);
+            x = ini.ReadValue(sectionName, "x", x);
+            y = ini.ReadValue(sectionName, "y", y);
+            width = ini.ReadValue(sectionName, "width", width);
+            height = ini.ReadValue(sectionName, "height", height);
+            margin = ini.ReadValue(sectionName, "margin", margin);
+            controlHeight = ini.ReadValue(sectionName, "controlHeight", controlHeight);
+            controlSpace = ini.ReadValue(sectionName, "controlSpace", controlSpace);
+
+            // read all controls' values
+            for (int i = 0; i < controls.Count; i++)
+                controls[i].ImportData(i, sectionName, $"Control{i}.", ini);
+
+            // close and save
+            ini.Close();
+        }
+
         //#################
         // ### CONTROLS ###
         // ################
@@ -168,11 +219,16 @@ namespace UrGUI
             internal WSpace() : base(string.Empty) { }
 
             internal override void Draw(Rect r) { }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini) { }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini) { }
         }
 
         internal class WLabel : WControl
         {
-            private GUIFormatting.AlignType alignment;
+            public GUIFormatting.AlignType alignment;
+
             private Rect rect = new Rect();
 
             internal WLabel(
@@ -191,6 +247,20 @@ namespace UrGUI
                 rect.y = pos.y;
 
                 GUI.Label(rect, displayedString);
+            }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "alignment", (int)alignment); // enum to int
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                alignment = (GUIFormatting.AlignType)ini.ReadValue(sectionName, keyBaseName + "alignment", (int)alignment); // int to enum
             }
         }
 
@@ -231,6 +301,20 @@ namespace UrGUI
                 if (newValue != value)
                     onValueChanged(newValue);
                 value = newValue;
+            }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "value", value);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
             }
         }
 
@@ -286,6 +370,20 @@ namespace UrGUI
                 if (newValue != value)
                     onValueChanged(newValue);
                 value = newValue;
+            }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "value", value);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
             }
         }
 
@@ -366,6 +464,20 @@ namespace UrGUI
                 GUI.Label(new Rect(pRect.width - 25, 60, 25, 20), clr.a.ToString("0.00"));
                 GUI.EndGroup();
             }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "color", clr);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                clr = ini.ReadValue(sectionName, keyBaseName + "color", clr);
+            }
         }
 
         internal class WDropDown : WControl
@@ -427,13 +539,6 @@ namespace UrGUI
                     IsDropDownOpen = !IsDropDownOpen;
                 GUI.Label(selectedLabelRect, list[value]);
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
-
-                // # DROP DOWN #
-                // draw dropdown
-                // TODO: refactor this, to: future me
-                
-
-
             }
 
             internal void DrawDropDown()
@@ -470,6 +575,20 @@ namespace UrGUI
 
                 GUI.enabled = false;
             }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "value", value);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+            }
         }
 
         public abstract class WControl
@@ -482,6 +601,16 @@ namespace UrGUI
             }
 
             internal abstract void Draw(Rect r);
+
+            internal virtual void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                ini.WriteValue(sectionName, keyBaseName + "displayString", displayedString);
+            }
+
+            internal virtual void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                displayedString = ini.ReadValue(sectionName, keyBaseName + "displayString", displayedString);
+            }
         }
     }
 }
