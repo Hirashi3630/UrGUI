@@ -457,7 +457,7 @@ namespace UrGUI
             {
                 float sliderWidth = 200;
                 float sliderHeight = 22;
-                GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
+                value = GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
                     null, sliderWidth, sliderHeight);
             }
 
