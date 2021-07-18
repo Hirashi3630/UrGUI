@@ -378,6 +378,7 @@ namespace UrGUI
                 this.max = max;
                 this.numberIndicator = numberIndicator;
                 this.numberIndicatorFormat = numberIndicatorFormat;
+                this.labelOnLeft = labelOnLeft;
             }
 
             internal override void Draw(Rect r)

@@ -25,14 +25,16 @@ namespace UrGUI.Utils
                 labelRect = new Rect(0, 0, nameSize.x, rect.height);
             else
                 labelRect = new Rect(rect.width - nameSize.x + offsetX, 0, nameSize.x, rect.height);
-            Rect sliderRect = new Rect(labelOnLeft ? rect.width - labelRect.width + offsetX : 0, 0, rect.width - labelRect.width - offsetX, rect.height);
+            Rect sliderRect = new Rect(labelOnLeft ? labelRect.width + offsetX : 0, 0, rect.width - labelRect.width - offsetX, rect.height);
             Rect numberRect = new Rect(sliderRect.x + sliderRect.width / 2f - 30f, 0, sliderRect.width / 2f, rect.height); // 30f is offset
-
+            MonoBehaviour.print($"nameSize: {nameSize}; labelRect: {labelRect}; sliderRect: {sliderRect}; numberRect: {numberRect}");
             // draw
+            GUI.BeginGroup(rect);
             GUI.Label(labelRect, label);
             var resultValue =  GUI.HorizontalSlider(sliderRect, value, min, max);
             if (numberIndicator)
                 GUI.Label(numberRect, value.ToString(numberIndicatorFormat));
+            GUI.EndGroup();
 
             return resultValue;
         }
