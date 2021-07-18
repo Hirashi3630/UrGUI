@@ -18,7 +18,7 @@ guiWindow.LoadSkinFromAssetBundle(absolutePathToAssetBundle, "nameOfMainSkin", "
 2. Create new GUISkin and edit
 
 <details><summary>How to create a GUISkin?</summary><blockquote>
-![create a new GUISkin](../Assets/Skins/Media/how-to-create-guiskin.jpg?raw=true)
+<img src="../Assets/Skins/Media/how-to-create-guiskin.jpg?raw=true" alt="how-to-create-guiskin">
 </blockquote></details>
 <details><summary>What to edit?</summary><blockquote>
 Download one of the existing skins and look what has been changed and play around with it<br>
@@ -26,6 +26,11 @@ If you want help with this, create a new issue, and I'll try to help!
 </blockquote></details>
 
 3. Add it to AssetBundle
+
+<details><summary>How?</summary><blockquote>
+<img src="../Assets/Skins/Media/how-to-add-asset-to-assetbundle.jpg?raw=true" alt="how-to-add-asset-to-assetbundle">
+</blockquote></details>
+
 4. Create new C# script in `Assets/Editor` folder named `CreateAssetBundles.cs`
 5. Paste this code to the script, save and let Unity compile
 
@@ -53,10 +58,10 @@ public class CreateAssetBundles
 6. Build AssetBundle (AssetBundle will be created in `Assets/AssetBundles`)
 
 <details><summary>How?</summary><blockquote>
-![how to build assetbundles](../Assets/Skins/Media/how-to-build-assetbundles.jpg?raw=true)
+<img src="../Assets/Skins/Media/how-to-build-assetbundles.jpg?raw=true" alt="how-to-build-assetbundles">
 </blockquote></details>
     
-7. [Load it!](#Load-existing-skin)
+7. [Load it!](#load-existing-skin)
 
 ## Featured skins
 > comming soon
