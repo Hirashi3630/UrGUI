@@ -37,6 +37,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utils\GUIControl.cs" />
     <Compile Include="Utils\GUIFormatting.cs" />
     <Compile Include="GUIWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

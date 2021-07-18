@@ -364,11 +364,12 @@ namespace UrGUI
             public float value;
 
             private float min, max;
-            private bool numberIndicator;
+            private bool numberIndicator, labelOnLeft;
             private string numberIndicatorFormat;
 
             internal WSlider(System.Action<float> onValueChanged, float value, float min, float max, bool numberIndicator, string numberIndicatorFormat,
-                string displayedString)
+                string displayedString,
+                bool labelOnLeft = true)
                 : base(displayedString)
             {
                 this.onValueChanged = onValueChanged;
@@ -381,35 +382,13 @@ namespace UrGUI
 
             internal override void Draw(Rect r)
             {
-                // get next control rect
-                Rect sliderRect = r;
-                Rect labelRect = sliderRect;
-                Rect numberRect;
 
-                // get size of text
-                Vector2 textSize = GUIFormatting.GetContentStringSize(displayedString);
-
-                // move slider rect to the right by size of text
-                sliderRect.x += textSize.x + 5f; // 5f is margin
-                sliderRect.y += 5f; // 5f is margin
-                sliderRect.width -= textSize.x + 5f; // 5f is margin
-
-                // change width of label rect by slider width
-                labelRect.width -= sliderRect.width - 5f; // 5f is margin
-
-                // draw
-                GUI.Label(labelRect, displayedString);
-                if (numberIndicator)
-                {
-                    numberRect = new Rect(sliderRect.x + sliderRect.width / 2f - 30f, sliderRect.y, sliderRect.width / 2f, 20);
-                    GUI.Label(numberRect, value.ToString(numberIndicatorFormat));
-                }
-                var newValue = GUI.HorizontalSlider(sliderRect, value, min, max);
+                var newValue = GUIControl.LabelSlider(r, displayedString, value, min, max, numberIndicator, numberIndicatorFormat, labelOnLeft, 5f);
 
                 // handle onChangedValue event 
                 if (newValue != value)
                     onValueChanged(newValue);
-                value = newValue;
+                value = newValue; 
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
@@ -429,7 +408,7 @@ namespace UrGUI
 
         internal class WColorPicker : WControl
         {
-            public Color clr;
+            public Color value;
 
             private System.Action<Color> onValueChanged;
             private bool IsPickerOpen { get => _isPickerOpen; set
@@ -449,7 +428,7 @@ namespace UrGUI
                 : base(displayedString)
             {
                 this.onValueChanged = onValueChanged;
-                this.clr = clr;
+                this.value = clr;
             }
 
             internal override void Draw(Rect r)
@@ -466,7 +445,7 @@ namespace UrGUI
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
                 GUI.Label(labelRect, displayedString);
                 var oldColor = GUI.color;
-                GUI.color = clr;
+                GUI.color = value;
                 if (GUI.Button(previewButtonRect, string.Empty, whiteButtonGUIStyle))
                     IsPickerOpen = !IsPickerOpen;
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
@@ -475,48 +454,24 @@ namespace UrGUI
 
             internal void DrawPicker()
             {
-                // TODO: refactor this, to: future me
-                // main box
-                Rect pRect = new Rect(rect.x + rect.width - 200, rect.height + rect.y, 200, 80); // picker rect
-                var oldColor = GUI.color;
-                GUI.color = Color.black;
-                GUI.Box(pRect, "", whiteButtonGUIStyle);
-                GUI.color = oldColor;
-
-                // inside
-                GUI.BeginGroup(pRect);
-                // labels
-                GUI.Label(new Rect(0, 0, 20, 20), "R: ");
-                GUI.Label(new Rect(0, 20, 20, 20), "G: ");
-                GUI.Label(new Rect(0, 40, 20, 20), "B: ");
-                GUI.Label(new Rect(0, 60, 20, 20), "A: ");
-
-                // sliders
-                clr.r = GUI.HorizontalSlider(new Rect(20, 5, pRect.width - 20 - 25, 20), clr.r, 0, 1);
-                clr.g = GUI.HorizontalSlider(new Rect(20, 25, pRect.width - 20 - 25, 20), clr.g, 0, 1);
-                clr.b = GUI.HorizontalSlider(new Rect(20, 45, pRect.width - 20 - 25, 20), clr.b, 0, 1);
-                clr.a = GUI.HorizontalSlider(new Rect(20, 65, pRect.width - 20 - 25, 20), clr.a, 0, 1);
-
-                // values
-                GUI.Label(new Rect(pRect.width - 25, 0, 25, 20), clr.r.ToString("0.00"));
-                GUI.Label(new Rect(pRect.width - 25, 20, 25, 20), clr.g.ToString("0.00"));
-                GUI.Label(new Rect(pRect.width - 25, 40, 25, 20), clr.b.ToString("0.00"));
-                GUI.Label(new Rect(pRect.width - 25, 60, 25, 20), clr.a.ToString("0.00"));
-                GUI.EndGroup();
+                float sliderWidth = 200;
+                float sliderHeight = 22;
+                GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
+                    null, sliderWidth, sliderHeight);
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "color", clr);
+                ini.WriteValue(sectionName, keyBaseName + "color", value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                clr = ini.ReadValue(sectionName, keyBaseName + "color", clr);
+                value = ini.ReadValue(sectionName, keyBaseName + "color", value);
             }
         }
 
@@ -583,7 +538,6 @@ namespace UrGUI
 
             internal void DrawDropDown()
             {
-                GUI.enabled = true;
                 // main box
                 Rect pRect = new Rect(selectedRect.x, selectedRect.y + selectedRect.height, selectedRect.width, rect.height * 4); // picker rect
                 var oldColor = GUI.color;
@@ -607,13 +561,9 @@ namespace UrGUI
                     }
                 }
 
-
-                // End the scroll view that we began above.
                 GUI.EndScrollView();
 
                 GUI.EndGroup();
-
-                GUI.enabled = false;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
