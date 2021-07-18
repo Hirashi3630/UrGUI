@@ -14,11 +14,13 @@ namespace UrGUI
         public static bool AnyWindowDragging = false;
         public static System.Action ActiveOptionMenu = null;
 
+        public bool IsEnabled { get; set; }
+
         private string windowTitle;
         private float x, y, width, height, margin, controlHeight, controlSpace;
         private bool isDraggable;
 
-        private bool isActive, isDragging;
+        private bool isDragging;
 
         private float nextControlY;
         private List<WControl> controls;
@@ -27,10 +29,10 @@ namespace UrGUI
         private GUISkin titleSkin = null;
 
         public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight, float margin, float controlHeight, float controlSpace,
-            bool isDraggable = true)
+            bool isEnabled = true, bool isDraggable = true)
         {
             GUIWindow b = new GUIWindow();
-            b.isActive = true;
+            b.IsEnabled = isEnabled;
             b.windowTitle = windowTitle;
             b.x = startX;
             b.y = startY;
@@ -54,6 +56,9 @@ namespace UrGUI
 
         public void Draw()
         {
+            // check if this window is enabled
+            if (!IsEnabled) return;
+
             // disable if it's required
             if (AllWindowsDisabled) GUI.enabled = false;
 
@@ -99,7 +104,7 @@ namespace UrGUI
             // window's title
             if (titleSkin != null)
                 GUI.skin = titleSkin;
-            GUI.Box(new Rect(x, y, width, controlHeight * 1.25f), windowTitle);
+            GUI.Box(new Rect(x, y, width, 25f), windowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
             // draw all controls
