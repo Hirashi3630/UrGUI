@@ -23,6 +23,8 @@ namespace UrGUI
         private float nextControlY;
         private List<WControl> controls;
 
+        private GUISkin mainSkin = null;
+        private GUISkin titleSkin = null;
 
         public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight, float margin, float controlHeight, float controlSpace,
             bool isDraggable = true)
@@ -55,6 +57,7 @@ namespace UrGUI
             // disable if it's required
             if (AllWindowsDisabled) GUI.enabled = false;
 
+            // handle drag
             if (isDraggable)
             {
                 // mouse drag
@@ -89,13 +92,19 @@ namespace UrGUI
             nextControlY = y + controlHeight + margin;
 
             // Main window
+            if (mainSkin != null)
+                GUI.skin = mainSkin;
             GUI.Box(new Rect(x, y, width, height), "");
 
             // window's title
+            if (titleSkin != null)
+                GUI.skin = titleSkin;
             GUI.Box(new Rect(x, y, width, controlHeight * 1.25f), windowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
             // draw all controls
+            if (mainSkin != null)
+                GUI.skin = mainSkin;
             foreach (var c in controls)
                 c.Draw(NextControlRect());
 
@@ -162,6 +171,26 @@ namespace UrGUI
 
             // close and save
             ini.Close();
+        }
+
+        public bool LoadSkin(GUISkin _mainSkin, GUISkin _titleSkin)
+        {
+            if (mainSkin == null || titleSkin == null) return false;
+            mainSkin = _mainSkin;
+            titleSkin = _titleSkin;
+
+            return true;
+        }
+
+        public bool LoadSkinFromAssetBundle(string absolutePathAssetBundle, string mainSkinName, string titleSkinName)
+        {
+            var asset = AssetBundle.LoadFromFile(absolutePathAssetBundle);
+
+            if (asset == null) return false;
+
+            mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
+            titleSkin = asset.LoadAsset<GUISkin>(titleSkinName);
+            return true;
         }
 
         //#################
