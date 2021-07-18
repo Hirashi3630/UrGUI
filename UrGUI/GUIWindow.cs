@@ -28,8 +28,8 @@ namespace UrGUI
         private GUISkin mainSkin = null;
         private GUISkin titleSkin = null;
 
-        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight, float margin, float controlHeight, float controlSpace,
-            bool isEnabled = true, bool isDraggable = true)
+        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
+            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
         {
             GUIWindow b = new GUIWindow();
             b.IsEnabled = isEnabled;
