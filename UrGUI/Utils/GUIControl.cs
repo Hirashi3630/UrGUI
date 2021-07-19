@@ -5,8 +5,6 @@ namespace UrGUI.Utils
 {
     public static class GUIControl
     {
-
-
         /// <summary>Named HorizontalSlider control</summary>
         /// <param name="rect">Full Rect of whole control</param>
         /// <param name="label">Label displayed next to the slider</param>
@@ -42,7 +40,7 @@ namespace UrGUI.Utils
         }
 
         /// <summary>RGBA Color Picker dialog using LabelSlider</summary>
-        /// <param name="leftTopCorner"></param>
+        /// <param name="leftTopCorner">Position of left top corner</param>
         /// <param name="value">The value the color picker shows</param>
         /// <param name="mainBoxStyle">Style of main box; if null = drawing black colored texture instead of box</param>
         /// <param name="sliderWidth">Width of individual sliders</param>
@@ -83,6 +81,18 @@ namespace UrGUI.Utils
             return newValue;
         }
 
+        /// <summary>Drop Down dialog with ScrollView</summary>
+        /// <param name="leftTopCorner">Position of left top corner</param>
+        /// <param name="list">dictionary of all options</param>
+        /// <param name="scrollPos">current scroll position of scroll view (x axis is ignored)</param>
+        /// <param name="scrollPosNew">new scroll position of scroll view (x axis is ignored)</param>
+        /// <param name="isOpen">false = user selected option and want's to hide drop down</param>
+        /// <param name="optionGUIStyle">GUIStyle of options (recommended GUI.skin.label)</param>
+        /// <param name="mainboxColoredTexture">If main box should be replaced with colored texture</param>
+        /// <param name="width">Width of whole dialog</param>
+        /// <param name="optionCountShown">How many of options should be displayed without slider</param>
+        /// <param name="optionHeight">Height of individual options</param>
+        /// <returns></returns>
         public static int DropDown(Vector2 leftTopCorner, Dictionary<int, string> list, Vector2 scrollPos, out Vector2 scrollPosNew, out bool isOpen,
            GUIStyle optionGUIStyle, bool mainboxColoredTexture = false, float width = 0, int optionCountShown = 4, float optionHeight = 22)
         {
