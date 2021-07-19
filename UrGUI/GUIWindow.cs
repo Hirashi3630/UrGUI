@@ -96,6 +96,10 @@ namespace UrGUI
             // reset nextControlY
             nextControlY = y + controlHeight + margin;
 
+            // disable gui if it's dragging
+            if (isDragging)
+                GUI.enabled = false;
+
             // Main window
             if (mainSkin != null)
                 GUI.skin = mainSkin;
