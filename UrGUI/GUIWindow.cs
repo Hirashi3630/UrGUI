@@ -484,8 +484,14 @@ namespace UrGUI
             {
                 float sliderWidth = 200;
                 float sliderHeight = 22;
-                value = GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
+                Color newValue = GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
                     false, sliderWidth, sliderHeight);
+
+                // handle event
+                if (newValue != value)
+                    onValueChanged.Invoke(newValue);
+
+                value = newValue;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
@@ -568,6 +574,10 @@ namespace UrGUI
                 var newValue = -1;
                 newValue = GUIControl.DropDown(new Vector2(selectedRect.x, selectedRect.y + selectedRect.height),
                     list, scrollPos, out scrollPos, out bool isOpen, DropDownOptionGUIStyle, false, selectedRect.width);
+
+                // handle event
+                if (newValue >= 0 & newValue != value)
+                    onValueChanged.Invoke(newValue);
 
                 if (newValue >= 0)
                     value = newValue;
