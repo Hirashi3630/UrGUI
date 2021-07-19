@@ -13,6 +13,7 @@ namespace UrGUI
         public static bool AllWindowsDisabled = false;
         public static bool AnyWindowDragging = false;
         public static System.Action ActiveOptionMenu = null;
+        public static GUIWindow dialogDrawer = null;
 
         public bool IsEnabled { get; set; }
 
@@ -121,8 +122,11 @@ namespace UrGUI
             GUI.enabled = true;
 
             // draw active option menu
-            if (ActiveOptionMenu != null)
-                ActiveOptionMenu();
+            if (dialogDrawer == null)
+                dialogDrawer = this;
+            if (dialogDrawer == this)
+                if (ActiveOptionMenu != null)
+                    ActiveOptionMenu();
         }
 
         private Rect NextControlRect()
@@ -481,7 +485,7 @@ namespace UrGUI
                 float sliderWidth = 200;
                 float sliderHeight = 22;
                 value = GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
-                    null, sliderWidth, sliderHeight);
+                    false, sliderWidth, sliderHeight);
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
