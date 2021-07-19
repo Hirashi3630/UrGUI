@@ -87,7 +87,7 @@ namespace UrGUI.Utils
            GUIStyle optionGUIStyle, bool mainboxColoredTexture = false, float width = 0, int optionCountShown = 4, float optionHeight = 22)
         {
             // init
-            int newValue = 0;
+            int newValue = -1;
             isOpen = true;
 
             // main box

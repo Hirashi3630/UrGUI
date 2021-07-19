@@ -505,7 +505,6 @@ namespace UrGUI
 
         internal class WDropDown : WControl
         {
-
             public System.Action<int> onValueChanged;
             public Dictionary<int, string> list;
             public int value;
@@ -566,8 +565,13 @@ namespace UrGUI
 
             internal void DrawDropDown()
             {
-                value = GUIControl.DropDown(new Vector2(selectedRect.x, selectedRect.y + selectedRect.height),
+                var newValue = -1;
+                newValue = GUIControl.DropDown(new Vector2(selectedRect.x, selectedRect.y + selectedRect.height),
                     list, scrollPos, out scrollPos, out bool isOpen, DropDownOptionGUIStyle, false, selectedRect.width);
+
+                if (newValue >= 0)
+                    value = newValue;
+
                 IsDropDownOpen = isOpen;
             }
 
