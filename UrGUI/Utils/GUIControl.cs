@@ -83,11 +83,11 @@ namespace UrGUI.Utils
             return newValue;
         }
 
-        public static int DropDown(Vector2 leftTopCorner, int value, Dictionary<int, string> list, Vector2 scrollPos, out Vector2 scrollPosNew, out bool isOpen,
+        public static int DropDown(Vector2 leftTopCorner, Dictionary<int, string> list, Vector2 scrollPos, out Vector2 scrollPosNew, out bool isOpen,
            GUIStyle optionGUIStyle, bool mainboxColoredTexture = false, float width = 0, int optionCountShown = 4, float optionHeight = 22)
         {
             // init
-            int newValue;
+            int newValue = 0;
             isOpen = true;
 
             // main box
@@ -118,7 +118,7 @@ namespace UrGUI.Utils
 
             GUI.EndGroup();
 
-            return value;
+            return newValue;
         }
 
         public static void ColoredBox(Rect r, Color color)

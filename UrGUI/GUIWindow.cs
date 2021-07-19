@@ -567,7 +567,7 @@ namespace UrGUI
             internal void DrawDropDown()
             {
                 value = GUIControl.DropDown(new Vector2(selectedRect.x, selectedRect.y + selectedRect.height),
-                    value, list, scrollPos, out scrollPos, out bool isOpen, DropDownOptionGUIStyle, false, selectedRect.width);
+                    list, scrollPos, out scrollPos, out bool isOpen, DropDownOptionGUIStyle, false, selectedRect.width);
                 IsDropDownOpen = isOpen;
             }
 
