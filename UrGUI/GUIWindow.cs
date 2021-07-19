@@ -128,54 +128,73 @@ namespace UrGUI
             return r;
         }
 
-        public void SaveCfg(string absolutePath)
+        public bool SaveCfg(string absolutePath)
         {
-            INIParser ini = new INIParser();
-            ini.Open(absolutePath);
+            try
+            {
+                INIParser ini = new INIParser();
+                ini.Open(absolutePath);
 
-            string sectionName = $"GUIWindow.{windowTitle}";
-            // write all values for GUIWindow
-            ini.WriteValue(sectionName, "windowTitle", windowTitle);
-            ini.WriteValue(sectionName, "x", x);
-            ini.WriteValue(sectionName, "y", y);
-            ini.WriteValue(sectionName, "width", width);
-            ini.WriteValue(sectionName, "height", height);
-            ini.WriteValue(sectionName, "margin", margin);
-            ini.WriteValue(sectionName, "controlHeight", controlHeight);
-            ini.WriteValue(sectionName, "controlSpace", controlSpace);
+                string sectionName = $"GUIWindow.{windowTitle}";
+                // write all values for GUIWindow
+                ini.WriteValue(sectionName, "windowTitle", windowTitle);
+                ini.WriteValue(sectionName, "x", x);
+                ini.WriteValue(sectionName, "y", y);
+                ini.WriteValue(sectionName, "width", width);
+                ini.WriteValue(sectionName, "height", height);
+                ini.WriteValue(sectionName, "margin", margin);
+                ini.WriteValue(sectionName, "controlHeight", controlHeight);
+                ini.WriteValue(sectionName, "controlSpace", controlSpace);
+
+                // write all controls' values
+                for (int i = 0; i < controls.Count; i++)
+                    controls[i].ExportData(i, sectionName, $"Control{i}.", ini);
+
+                // close and save
+                ini.Close();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
             
-            // write all controls' values
-            for (int i = 0; i < controls.Count; i++)
-                controls[i].ExportData(i, sectionName, $"Control{i}.", ini);
-
-            // close and save
-            ini.Close();
         }
 
-        public void LoadCfg(string absolutePath)
+        public bool LoadCfg(string absolutePath)
         {
-            if (!System.IO.File.Exists(absolutePath)) return;
+            if (!System.IO.File.Exists(absolutePath)) return false;
 
-            INIParser ini = new INIParser();
-            ini.Open(absolutePath);
+            try
+            {
+                INIParser ini = new INIParser();
+                ini.Open(absolutePath);
 
-            string sectionName = $"GUIWindow.{windowTitle}";
-            // read all values for GUIWindow
-            windowTitle = ini.ReadValue(sectionName, "windowTitle", windowTitle);
-            x = ini.ReadValue(sectionName, "x", x);
-            y = ini.ReadValue(sectionName, "y", y);
-            width = ini.ReadValue(sectionName, "width", width);
-            height = ini.ReadValue(sectionName, "height", height);
-            margin = ini.ReadValue(sectionName, "margin", margin);
-            controlHeight = ini.ReadValue(sectionName, "controlHeight", controlHeight);
-            controlSpace = ini.ReadValue(sectionName, "controlSpace", controlSpace);
+                string sectionName = $"GUIWindow.{windowTitle}";
+                // read all values for GUIWindow
+                windowTitle = ini.ReadValue(sectionName, "windowTitle", windowTitle);
+                x = ini.ReadValue(sectionName, "x", x);
+                y = ini.ReadValue(sectionName, "y", y);
+                width = ini.ReadValue(sectionName, "width", width);
+                height = ini.ReadValue(sectionName, "height", height);
+                margin = ini.ReadValue(sectionName, "margin", margin);
+                controlHeight = ini.ReadValue(sectionName, "controlHeight", controlHeight);
+                controlSpace = ini.ReadValue(sectionName, "controlSpace", controlSpace);
 
-            // read all controls' values
-            for (int i = 0; i < controls.Count; i++)
-                controls[i].ImportData(i, sectionName, $"Control{i}.", ini);
+                // read all controls' values
+                for (int i = 0; i < controls.Count; i++)
+                    controls[i].ImportData(i, sectionName, $"Control{i}.", ini);
 
-            // close and save
-            ini.Close();
+                // close and save
+                ini.Close();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool LoadSkin(GUISkin _mainSkin, GUISkin _titleSkin)
