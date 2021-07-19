@@ -558,32 +558,9 @@ namespace UrGUI
 
             internal void DrawDropDown()
             {
-                // main box
-                Rect pRect = new Rect(selectedRect.x, selectedRect.y + selectedRect.height, selectedRect.width, rect.height * 4); // picker rect
-                var oldColor = GUI.color;
-                GUI.color = Color.black;
-                GUI.Box(pRect, "", whiteButtonGUIStyle);
-                GUI.color = oldColor;
-
-                // inside
-                GUI.BeginGroup(pRect);
-
-                scrollPos = GUI.BeginScrollView(
-                    new Rect(0, 0, pRect.width, pRect.height), scrollPos,
-                    new Rect(0, 0, 0, list.Count * rect.height));
-
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (GUI.Button(new Rect(0, i * rect.height, pRect.width - 15, rect.height), list[i], DropDownOptionGUIStyle)) // 15 is width of scrollbar
-                    {
-                        value = i;
-                        IsDropDownOpen = false;
-                    }
-                }
-
-                GUI.EndScrollView();
-
-                GUI.EndGroup();
+                value = GUIControl.DropDown(new Vector2(selectedRect.x, selectedRect.y + selectedRect.height),
+                    value, list, scrollPos, out scrollPos, out bool isOpen, DropDownOptionGUIStyle, false, selectedRect.width);
+                IsDropDownOpen = isOpen;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)

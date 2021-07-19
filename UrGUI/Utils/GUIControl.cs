@@ -1,9 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace UrGUI.Utils
 {
     public static class GUIControl
     {
+
+
         /// <summary>Named HorizontalSlider control</summary>
         /// <param name="rect">Full Rect of whole control</param>
         /// <param name="label">Label displayed next to the slider</param>
@@ -47,8 +50,8 @@ namespace UrGUI.Utils
         /// <param name="offsetY">Pixel offset between sliders</param>
         /// <param name="margin">Pixel offset from each side</param>
         /// <returns></returns>
-        public static Color ColorPicker(Vector2 leftTopCorner, Color value, GUIStyle mainBoxStyle = null,
-            float sliderWidth = 200f, float sliderHeight = 22f, float offsetY = 5f, float margin = 5f)
+        public static Color ColorPicker(Vector2 leftTopCorner, Color value,
+            bool mainboxColoredTexture = false, float sliderWidth = 200f, float sliderHeight = 22f, float offsetY = 5f, float margin = 5f)
         {
             // calculate width of label
             float labelWidth = GUIFormatting.GetContentStringSize("X: ").x;
@@ -61,10 +64,10 @@ namespace UrGUI.Utils
                 labelWidth + sliderWidth, // width
                 sliderHeight * 4 + offsetY * 3f); // height
             // draw main box
-            if (mainBoxStyle == null)
+            if (mainboxColoredTexture)
                 ColoredBox(mainRect, Color.gray);
             else
-                GUI.Box(mainRect, "", mainBoxStyle);
+                GUI.Box(mainRect, "");
 
             // inside
             GUI.BeginGroup(controlsRect);
@@ -80,10 +83,42 @@ namespace UrGUI.Utils
             return newValue;
         }
 
-        public static int DropDown()
+        public static int DropDown(Vector2 leftTopCorner, int value, Dictionary<int, string> list, Vector2 scrollPos, out Vector2 scrollPosNew, out bool isOpen,
+           GUIStyle optionGUIStyle, bool mainboxColoredTexture = false, float width = 0, int optionCountShown = 4, float optionHeight = 22)
         {
-            // TODO:
-            throw new System.NotImplementedException();
+            // init
+            int newValue;
+            isOpen = true;
+
+            // main box
+            Rect mainRect = new Rect(leftTopCorner.x, leftTopCorner.y, width + 15f, optionHeight * optionCountShown); // 15 is pixel width of scrollbar
+
+            if (mainboxColoredTexture)
+                ColoredBox(mainRect, Color.gray);
+            else
+                GUI.Box(mainRect, "");
+
+            // inside
+            GUI.BeginGroup(mainRect);
+
+            scrollPosNew = GUI.BeginScrollView(
+                new Rect(0, 0, mainRect.width, mainRect.height), scrollPos,
+                new Rect(0, 0, 0, list.Count * optionHeight));
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (GUI.Button(new Rect(0, i * optionHeight, mainRect.width - 15, optionHeight), list[i], optionGUIStyle)) // 15 is width of scrollbar
+                {
+                    newValue = i;
+                    isOpen = false;
+                }
+            }
+
+            GUI.EndScrollView();
+
+            GUI.EndGroup();
+
+            return value;
         }
 
         public static void ColoredBox(Rect r, Color color)
