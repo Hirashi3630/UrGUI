@@ -466,7 +466,7 @@ namespace UrGUI
                 previewButtonRect.width /= 3f;
                 previewButtonRect.x += previewButtonRect.width * 2f;
                 Rect labelRect = rect;
-                labelRect.width -= previewButtonRect.width * 2f;
+                labelRect.width *= 0.66666f;
 
                 // # COLOR PICKER #
                 // draw preview button
