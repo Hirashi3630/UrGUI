@@ -4,4 +4,4 @@ As the name indicates, this skin is heavily inspired by the one and only [hero](
 
 GUIWindowExample 1         |  ColorPicker & DropDown
 :-------------------------:|:-------------------------:
-<img src="../../Assets/Skins/Media/ocornut-guiwindowexample1.png?raw=true" alt="ocornut-guiwindowexample1">  |  <img src="../../Assets/Skins/Media/ocornut-guiwindowexample1.png_colorpicker?raw=true" alt="ocornut-guiwindowexample1_colorpicker"> <img src="../../Assets/Skins/Media/ocornut-guiwindowexample1.png_dropdown?raw=true" alt="ocornut-guiwindowexample1_dropdown">
+<img src="../../Assets/Skins/Media/ocornut-guiwindowexample1.png?raw=true" alt="ocornut-guiwindowexample1">  |  <img src="../../Assets/Skins/Media/ocornut-guiwindowexample1_colorpicker.png?raw=true" alt="ocornut-guiwindowexample1_colorpicker"> <img src="../../Assets/Skins/Media/ocornut-guiwindowexample1_dropdown.png?raw=true" alt="ocornut-guiwindowexample1_dropdown">
