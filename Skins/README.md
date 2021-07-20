@@ -7,7 +7,7 @@
 
 
 1. Get AssetBundle file by [downloading](#featured-skins)/[creating](#creating-own-skin) one
-2. Load skins (If you download skins from [here](#featured-skins), names for each skin can be found in `.txt` file attached to it)<br><br>
+2. Load skins (If you download skins from [here](#featured-skins), names for each skin can be found in `README.md` file attached to it)<br><br>
 **GUIWindow:**
 ```cs
 guiWindow.LoadSkinFromAssetBundle(absolutePathToAssetBundle, "nameOfMainSkin", "nameOfTitleSkin");
