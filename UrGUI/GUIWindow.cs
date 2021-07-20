@@ -229,56 +229,49 @@ namespace UrGUI
         // ### CONTROLS ###
         // ################
 
-        public static WControl Space()
+        public void Space()
         {
             var c = new WSpace();
-
-            return c;
+            Add(c);
         }
 
-        public static WControl Label(string text,
+        public void Label(string text,
                 GUIFormatting.AlignType alignment = GUIFormatting.AlignType.LeftTop)
         {
             var c = new WLabel(text, alignment);
-
-            return c;
+            Add(c);
         }
 
-        public static WControl Button(string text, System.Action onPressed)
+        public void Button(string text, System.Action onPressed)
         {
             var c = new WButton(onPressed, text);
-
-            return c;
+            Add(c);
         }
 
-        public static WControl Toggle(string text, System.Action<bool> onValueChanged,
+        public void  Toggle(string text, System.Action<bool> onValueChanged,
                 bool value = false)
         {
             var c = new WToggle(onValueChanged, value, text);
-
-            return c;
+            Add(c);
         }
 
-        public static WControl Slider(string text, System.Action<float> onValueChanged, float value, float min, float max,
+        public void Slider(string text, System.Action<float> onValueChanged, float value, float min, float max,
                 bool numberIndicator = false, string numberIndicatorFormat = "0.##")
         {
             var c = new WSlider(onValueChanged, value, min, max, numberIndicator, numberIndicatorFormat, text);
-
-            return c;
+            Add(c);
         }
 
-        public static WControl ColorPicker(string text, System.Action<Color> onValueChanged, Color value)
+        public void ColorPicker(string text, System.Action<Color> onValueChanged, Color value)
         {
             var c = new WColorPicker(onValueChanged, value, text);
-
-            return c;
+            Add(c);
         }
 
-        public static WControl DropDown(string text, System.Action<int> onValueChanged, int value, Dictionary<int, string> list)
+        public void DropDown(string text, System.Action<int> onValueChanged, int value, Dictionary<int, string> list)
         {
             var c = new WDropDown(onValueChanged, value, list, text);
-
-            return c;
+            Add(c);
         }
 
         internal class WSpace : WControl
