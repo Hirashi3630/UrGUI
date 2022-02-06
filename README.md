@@ -8,14 +8,17 @@
 
 > UrGUI: easy to use extension for Unity IMGUI system
 > <br><br>
-> The main focus of this project is to create an easy-to-use extension library for Unity IMGUI, primarily used for modding purposes.
+> The main focus of this project is to create an easy-to-use extension library for Unity IMGUI, primarily used for modding and debugging purposes.
 
 ----
+
+<br>
+
 ## Usage
 
 ### Quickstart
 
-a simple menu with button
+a simple menu with label and button
 
 ```cs
 private GUIWindow window1;
@@ -45,13 +48,11 @@ private void OnGUI()
   
 </blockquote></details>
 
-
-### Controls
-
-<blockquote>
-
 <br>
 
+## Controls
+
+<blockquote>
 
   #### Space
   
