@@ -10,6 +10,9 @@ namespace UrGUI
 
         public static readonly GUIStyle whiteButtonGUIStyle = new GUIStyle { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
 
+        public static float DynamicWindowsCurrentX = 0;
+        public static readonly float DynamicWindowsMarginX = 10;
+        
         public static bool AllWindowsDisabled = false;
         public static bool AnyWindowDragging = false;
         public static System.Action ActiveOptionMenu = null;
@@ -30,20 +33,46 @@ namespace UrGUI
         private GUISkin titleSkin = null;
 
         /// <summary>
-        /// Create a GUIWindow
+        /// Create a GUIWIndow with dynamic position and size
         /// </summary>
-        /// <param name="windowTitle">Window's title shown at the top</param>
-        /// <param name="startX">Starting X position ([0;0] is in the top left)</param>
-        /// <param name="startY">Starting Y position ([0;0] is in the top left)</param>
-        /// <param name="startWidth">Width of the window</param>
-        /// <param name="startHeight">Height of the window</param>
+        /// <param name="windowTitle">Window's title shown in the header</param>
         /// <param name="margin">Margin around individual controls</param>
         /// <param name="controlHeight">Control's height</param>
         /// <param name="controlSpace">Vertical space between controls</param>
         /// <param name="isEnabled"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
+        public static GUIWindow Begin(string windowTitle = "a Title",
+            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
+        {
+            DynamicWindowsCurrentX += DynamicWindowsMarginX;
+            
+            float x = DynamicWindowsCurrentX;
+            float y = DynamicWindowsMarginX;
+            float width = 200;
+            float height = 400;
+
+            DynamicWindowsCurrentX += width + DynamicWindowsMarginX;
+
+            return Begin(windowTitle, x, y, width, height, margin, controlHeight, controlSpace, isEnabled, isDraggable);
+        }
+
+
+            /// <summary>
+            /// Create a GUIWindow
+            /// </summary>
+            /// <param name="windowTitle">Window's title shown in the header</param>
+            /// <param name="startX">Starting X position ([0;0] is in the top left)</param>
+            /// <param name="startY">Starting Y position ([0;0] is in the top left)</param>
+            /// <param name="startWidth">Width of the window</param>
+            /// <param name="startHeight">Height of the window</param>
+            /// <param name="margin">Margin around individual controls</param>
+            /// <param name="controlHeight">Control's height</param>
+            /// <param name="controlSpace">Vertical space between controls</param>
+            /// <param name="isEnabled"></param>
+            /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
+            /// <returns></returns>
+            public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
         {
             GUIWindow b = new GUIWindow();
