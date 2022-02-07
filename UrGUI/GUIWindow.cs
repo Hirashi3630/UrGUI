@@ -60,21 +60,21 @@ namespace UrGUI
         }
 
 
-            /// <summary>
-            /// Create a GUIWindow
-            /// </summary>
-            /// <param name="windowTitle">Window's title shown in the header</param>
-            /// <param name="startX">Starting X position ([0;0] is in the top left)</param>
-            /// <param name="startY">Starting Y position ([0;0] is in the top left)</param>
-            /// <param name="startWidth">Width of the window</param>
-            /// <param name="startHeight">Height of the window</param>
-            /// <param name="margin">Margin around individual controls</param>
-            /// <param name="controlHeight">Control's height</param>
-            /// <param name="controlSpace">Vertical space between controls</param>
-            /// <param name="isEnabled"></param>
-            /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
-            /// <returns></returns>
-            public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
+        /// <summary>
+        /// Create a GUIWindow
+        /// </summary>
+        /// <param name="windowTitle">Window's title shown in the header</param>
+        /// <param name="startX">Starting X position ([0;0] is in the top left)</param>
+        /// <param name="startY">Starting Y position ([0;0] is in the top left)</param>
+        /// <param name="startWidth">Width of the window</param>
+        /// <param name="startHeight">Height of the window</param>
+        /// <param name="margin">Margin around individual controls</param>
+        /// <param name="controlHeight">Control's height</param>
+        /// <param name="controlSpace">Vertical space between controls</param>
+        /// <param name="isEnabled"></param>
+        /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
+        /// <returns></returns>
+        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
         {
             GUIWindow b = new GUIWindow();
@@ -88,7 +88,6 @@ namespace UrGUI
             b.controlHeight = controlHeight;
             b.controlSpace = controlSpace;
             b.isDraggable = isDraggable;
-
 
             b.controls = new List<WControl>();
 
@@ -183,7 +182,7 @@ namespace UrGUI
 
         private Rect NextControlRect()
         {
-            Rect r = new Rect(x + margin, nextControlY, width - margin * 2, controlHeight);
+            Rect r = new Rect(x + margin, nextControlY, width - (margin * 2), controlHeight);
             nextControlY += controlHeight + controlSpace;
             return r;
         }
@@ -224,7 +223,6 @@ namespace UrGUI
             {
                 return false;
             }
-            
         }
 
         /// <summary>

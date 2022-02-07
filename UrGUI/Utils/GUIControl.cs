@@ -27,7 +27,7 @@ namespace UrGUI.Utils
             else
                 labelRect = new Rect(rect.width - nameSize.x + offsetX, 0, nameSize.x, rect.height);
             Rect sliderRect = new Rect(labelOnLeft ? labelRect.width + offsetX : 0, 0, rect.width - labelRect.width - offsetX, rect.height);
-            Rect numberRect = new Rect(sliderRect.x + sliderRect.width / 2f - 30f, 0, sliderRect.width / 2f, rect.height); // 30f is offset
+            Rect numberRect = new Rect(sliderRect.x + (sliderRect.width / 2f) - 30f, 0, sliderRect.width / 2f, rect.height); // 30f is offset
             // draw
             GUI.BeginGroup(rect);
             GUI.Label(labelRect, label);
@@ -95,11 +95,11 @@ namespace UrGUI.Utils
 
             // main box
             Rect mainRect = new Rect(leftTopCorner.x, leftTopCorner.y, // x, y 
-                labelWidth + sliderWidth + margin * 2f, // width -> 'margin * 2' = margin from both sides
-                sliderHeight * 4 + offsetY * 3f + margin * 2f);// height -> '* 4f' = 4 sliders (RGBA); '* 3f' = 3 spaces between sliders
+                (labelWidth + sliderWidth) + (margin * 2f), // width -> 'margin * 2' = margin from both sides
+                (sliderHeight * 4) + (offsetY * 3f) + (margin * 2f)); // height -> '* 4f' = 4 sliders (RGBA); '* 3f' = 3 spaces between sliders
             Rect controlsRect = new Rect(leftTopCorner.x + margin, leftTopCorner.y + margin, // x, y
                 labelWidth + sliderWidth, // width
-                sliderHeight * 4 + offsetY * 3f); // height
+                (sliderHeight * 4) + (offsetY * 3f)); // height
             // draw main box
             if (mainboxColoredTexture)
                 ColoredBox(mainRect, Color.gray);
@@ -111,10 +111,10 @@ namespace UrGUI.Utils
 
             // draw label sliders
             var newValue = value;
-            newValue.r = LabelSlider(new Rect(0, sliderHeight * 0 + offsetY * 0, controlsRect.width, sliderHeight), "R: ", value.r, 0f, 1f);
-            newValue.g = LabelSlider(new Rect(0, sliderHeight * 1 + offsetY * 1, controlsRect.width, sliderHeight), "G: ", value.g, 0f, 1f);
-            newValue.b = LabelSlider(new Rect(0, sliderHeight * 2 + offsetY * 2, controlsRect.width, sliderHeight), "B: ", value.b, 0f, 1f);
-            newValue.a = LabelSlider(new Rect(0, sliderHeight * 3 + offsetY * 3, controlsRect.width, sliderHeight), "A: ", value.a, 0f, 1f);
+            newValue.r = LabelSlider(new Rect(0, (sliderHeight * 0) + (offsetY * 0), controlsRect.width, sliderHeight), "R: ", value.r, 0f, 1f);
+            newValue.g = LabelSlider(new Rect(0, (sliderHeight * 1) + (offsetY * 1), controlsRect.width, sliderHeight), "G: ", value.g, 0f, 1f);
+            newValue.b = LabelSlider(new Rect(0, (sliderHeight * 2) + (offsetY * 2), controlsRect.width, sliderHeight), "B: ", value.b, 0f, 1f);
+            newValue.a = LabelSlider(new Rect(0, (sliderHeight * 3) + (offsetY * 3), controlsRect.width, sliderHeight), "A: ", value.a, 0f, 1f);
             GUI.EndGroup();
 
             return newValue;
