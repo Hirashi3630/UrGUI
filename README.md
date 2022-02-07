@@ -86,6 +86,28 @@ private void OnGUI()
 
 <br><br>
   
+  #### Slider
+
+  <img src="Assets/Media/slider_showcase1.gif?raw=true" alt="slider_showcase">
+  
+
+  ```cs
+  window1.Slider("Slider:", (value) => print($"Toggle value is now {value}"), 0.5f, 0f, 1f, true);
+  ```
+
+<br><br>
+  
+  #### Toggle
+
+  <img src="Assets/Media/toggle_showcase1.gif?raw=true" alt="toggle_showcase">
+  
+
+  ```cs
+  window1.Toggle("Toggle me!", (value) => print($"Toggle value is now {value}"));
+  ```
+
+<br><br>
+  
   #### ColorPicker
 
   <img src="Assets/Media/colorpicker_showcase1.gif?raw=true" alt="colorpicker_showcase">
