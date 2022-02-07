@@ -42,15 +42,17 @@ namespace UrGUI
         /// <param name="isEnabled"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle = "a Title",
+        public static GUIWindow Begin(string windowTitle = "a Title", float startWidth = 200, float startHeight = 400,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
         {
             DynamicWindowsCurrentX += DynamicWindowsMarginX;
             
+            // get dynamic X position based on previously created GUIWindows
             float x = DynamicWindowsCurrentX;
             float y = DynamicWindowsMarginX;
-            float width = 200;
-            float height = 400;
+            // set default size
+            float width = startWidth;
+            float height = startHeight;
 
             DynamicWindowsCurrentX += width + DynamicWindowsMarginX;
 
