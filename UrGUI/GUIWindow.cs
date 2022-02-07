@@ -331,7 +331,7 @@ namespace UrGUI
         /// <param name="text">label's</param>
         /// <param name="onValueChanged"></param>
         /// <param name="value">default value</param>
-        public void  Toggle(string text, System.Action<bool> onValueChanged,
+        public void Toggle(string text, System.Action<bool> onValueChanged,
                 bool value = false)
         {
             var c = new WToggle(onValueChanged, value, text);
@@ -352,6 +352,34 @@ namespace UrGUI
                 bool numberIndicator = false, string numberIndicatorFormat = "0.##")
         {
             var c = new WSlider(onValueChanged, value, min, max, numberIndicator, numberIndicatorFormat, text);
+            Add(c);
+        }
+
+        /// <summary>
+        /// a simple text field control with label
+        /// </summary>
+        /// <param name="text">label's text</param>
+        /// <param name="onValueChanged"></param>
+        /// <param name="value">default value</param>
+        /// <param name="maxSymbolLength">maximum number of characters</param>
+        /// <param name="regexReplace">regex filter for unwanted characters typed by user</param>
+        public void TextField(string text, System.Action<string> onValueChanged, string value, int maxSymbolLength,
+                string regexReplace = "")
+        {
+            var c = new WTextField(onValueChanged, value, maxSymbolLength, regexReplace, text);
+            Add(c);
+        }
+
+        /// <summary>
+        /// a simple float field control with label
+        /// </summary>
+        /// <param name="text">label's text</param>
+        /// <param name="onValueChanged"></param>
+        /// <param name="value">default value</param>
+        /// <param name="maxSymbolLength">maximum number of characters</param>
+        public void FloatField(string text, System.Action<float> onValueChanged, float value, int maxSymbolLength)
+        {
+            var c = new WFloatField(onValueChanged, value, maxSymbolLength, text);
             Add(c);
         }
 
@@ -509,13 +537,112 @@ namespace UrGUI
 
             internal override void Draw(Rect r)
             {
-
                 var newValue = GUIControl.LabelSlider(r, displayedString, value, min, max, numberIndicator, numberIndicatorFormat, labelOnLeft, 5f);
 
                 // handle onChangedValue event 
                 if (newValue != value)
                     onValueChanged(newValue);
                 value = newValue; 
+            }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "value", value);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+            }
+        }
+
+        internal class WTextField : WControl
+        {
+            public System.Action<string> onValueChanged;
+            public string value;
+
+            private string regexReplace;
+            private int maxSymbolLength;
+            private bool labelOnLeft;
+
+            internal WTextField(System.Action<string> onValueChanged, string value, int maxSymbolLength, string regexReplace,
+                string displayedString,
+                bool labelOnLeft = true)
+                : base(displayedString)
+            {
+                this.onValueChanged = onValueChanged;
+                this.value = value;
+                this.regexReplace = regexReplace;
+                this.maxSymbolLength = maxSymbolLength;
+                this.labelOnLeft = labelOnLeft;
+            }
+
+            internal override void Draw(Rect r)
+            {
+                var newValue = GUIControl.LabelTextField(r, displayedString, value, maxSymbolLength, regexReplace, labelOnLeft, 5f);
+
+                // handle onChangedValue event 
+                if (newValue != value)
+                    onValueChanged(newValue);
+                value = newValue;
+            }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "value", value);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+            }
+        }
+
+        internal class WFloatField : WControl
+        {
+            public System.Action<float> onValueChanged;
+            public float value;
+
+            private int maxSymbolLength;
+            private bool labelOnLeft;
+
+            private readonly string regexReplace;
+
+            internal WFloatField(System.Action<float> onValueChanged, float value, int maxSymbolLength,
+                string displayedString,
+                bool labelOnLeft = true)
+                : base(displayedString)
+            {
+                this.onValueChanged = onValueChanged;
+                this.value = value;
+                this.regexReplace = "[^0-9.,]";
+                this.maxSymbolLength = maxSymbolLength;
+                this.labelOnLeft = labelOnLeft;
+            }
+
+            internal override void Draw(Rect r)
+            {
+                // create TextField and replace all symbols that are not numbers or ',' / '.'
+                var stringResult = GUIControl.LabelTextField(r, displayedString, value.ToString(), maxSymbolLength, regexReplace, labelOnLeft, 5f);
+
+                // replace all commas to dots
+                stringResult = stringResult.Replace(',', '.');
+
+                // finally parse to float (ignore invalid entries)
+                float.TryParse(stringResult, out float floatResult);
+
+                // handle onChangedValue event 
+                if (floatResult != value)
+                    onValueChanged(floatResult);
+                value = floatResult;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)

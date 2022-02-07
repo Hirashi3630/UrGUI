@@ -39,6 +39,45 @@ namespace UrGUI.Utils
             return resultValue;
         }
 
+        /// <summary>Named TextField</summary>
+        /// <param name="rect">Full Rect of whole control</param>
+        /// <param name="label">Label displayed next to the slider</param>
+        /// <param name="value">The value the slider shows</param>
+        /// <param name="maxSymbolLength">Maximum number of symbols that can user input</param>
+        /// <param name="regexReplace">Regex replace filter</param>
+        /// <param name="labelOnLeft">Where should the label be; true = text on left, false = text on right</param>
+        /// <param name="offsetX">Pixel offset between pixel and slider</param>
+        /// <returns></returns>
+        public static string LabelTextField(Rect rect, string label, string value, int maxSymbolLength,
+            string regexReplace = "", bool labelOnLeft = true, float offsetX = 5f)
+        {
+            // get size of string name
+            Vector2 nameSize = GUIFormatting.GetContentStringSize(label);
+            // get all rects
+            Rect labelRect;
+            if (labelOnLeft)
+                labelRect = new Rect(0, 0, nameSize.x, rect.height);
+            else
+                labelRect = new Rect(rect.width - nameSize.x + offsetX, 0, nameSize.x, rect.height);
+            Rect sliderRect = new Rect(labelOnLeft ? labelRect.width + offsetX : 0, 0, rect.width - labelRect.width - offsetX, rect.height);
+            // draw
+            GUI.BeginGroup(rect);
+            GUI.Label(labelRect, label);
+            var resultValue = GUI.TextField(sliderRect, value, maxSymbolLength);
+            GUI.EndGroup();
+
+            // apply regex
+            if (!string.IsNullOrEmpty(regexReplace))
+                resultValue = System.Text.RegularExpressions.Regex.Replace(resultValue, regexReplace, string.Empty);
+            
+            return resultValue;
+        }
+
+        public static Vector3 LabelVector3Field(Rect rect, string label, Vector3 value, Vector3 min, Vector3 max)
+        {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>RGBA Color Picker dialog using LabelSlider</summary>
         /// <param name="leftTopCorner">Position of left top corner</param>
         /// <param name="value">The value the color picker shows</param>

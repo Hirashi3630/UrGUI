@@ -97,6 +97,28 @@ private void OnGUI()
 
 <br><br>
   
+  #### TextField
+
+  <img src="Assets/Media/textfield_showcase1.gif?raw=true" alt="textfield_showcase">
+  
+
+  ```cs
+  window1.TextField("Name:", (value) => Debug.Log($"TextField has been changed to '{value}'"), "Sample Text", 64);
+  ```
+
+<br><br>
+  
+  #### FloatField
+
+  <img src="Assets/Media/floatfield_showcase1.gif?raw=true" alt="floatfield_showcase">
+  
+
+  ```cs
+  window1.FloatField("X:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 12.34f, 20);
+  ```
+
+<br><br>
+  
   #### Toggle
 
   <img src="Assets/Media/toggle_showcase1.gif?raw=true" alt="toggle_showcase">
