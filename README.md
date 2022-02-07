@@ -1,10 +1,7 @@
 
 <h1 align="center">UrGUI</h1>
-<p>
-  <a href="https://www.mit-license.org" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
-</p>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![GitHub issues](https://img.shields.io/github/issues/Hirashi3630/UrGUI) [![CodeFactor](https://www.codefactor.io/repository/github/hirashi3630/urgui/badge/main)](https://www.codefactor.io/repository/github/hirashi3630/urgui/overview/main) 
 
 > UrGUI: easy to use extension for Unity IMGUI system
 > <br><br>
