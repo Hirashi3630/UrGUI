@@ -8,7 +8,7 @@ namespace UrGUI
     {
         protected GUIWindow() { }
 
-        public static readonly GUIStyle whiteButtonGUIStyle = new GUIStyle { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
+        private static readonly GUIStyle WhiteButtonGUIStyle = new GUIStyle { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
 
         public static float DynamicWindowsCurrentX = 0;
         public static readonly float DynamicWindowsMarginX = 10;
@@ -16,26 +16,28 @@ namespace UrGUI
         public static bool AllWindowsDisabled = false;
         public static bool AnyWindowDragging = false;
         public static System.Action ActiveOptionMenu = null;
-        public static GUIWindow dialogDrawer = null;
+        public static GUIWindow DialogDrawer = null;
 
         public bool IsEnabled { get; set; }
 
-        private string windowTitle;
-        private float x, y, width, height, margin, controlHeight, controlSpace;
-        private bool isDraggable;
+        private string _windowTitle;
+        private float _x, _y, _width, _height, _margin, _controlHeight, _controlSpace;
+        private bool _isDraggable;
 
-        private bool isDragging;
+        private bool _isDragging;
 
-        private float nextControlY;
-        private List<WControl> controls;
+        private float _nextControlY;
+        private List<WControl> _controls;
 
-        private GUISkin mainSkin = null;
-        private GUISkin titleSkin = null;
+        private GUISkin _mainSkin = null;
+        private GUISkin _titleSkin = null;
 
         /// <summary>
-        /// Create a GUIWIndow with dynamic position and size
+        /// Create a GUIWindow with dynamic position and size
         /// </summary>
         /// <param name="windowTitle">Window's title shown in the header</param>
+        /// <param name="startWidth">Window's width</param>
+        /// <param name="startHeight">Window's height</param>
         /// <param name="margin">Margin around individual controls</param>
         /// <param name="controlHeight">Control's height</param>
         /// <param name="controlSpace">Vertical space between controls</param>
@@ -79,17 +81,17 @@ namespace UrGUI
         {
             GUIWindow b = new GUIWindow();
             b.IsEnabled = isEnabled;
-            b.windowTitle = windowTitle;
-            b.x = startX;
-            b.y = startY;
-            b.width = startWidth;
-            b.height = startHeight;
-            b.margin = margin;
-            b.controlHeight = controlHeight;
-            b.controlSpace = controlSpace;
-            b.isDraggable = isDraggable;
+            b._windowTitle = windowTitle;
+            b._x = startX;
+            b._y = startY;
+            b._width = startWidth;
+            b._height = startHeight;
+            b._margin = margin;
+            b._controlHeight = controlHeight;
+            b._controlSpace = controlSpace;
+            b._isDraggable = isDraggable;
 
-            b.controls = new List<WControl>();
+            b._controls = new List<WControl>();
 
             return b;
         }
@@ -100,7 +102,7 @@ namespace UrGUI
         /// <param name="c"></param>
         public void Add(WControl c)
         {
-            controls.Add(c);
+            _controls.Add(c);
         }
 
         /// <summary>
@@ -115,75 +117,75 @@ namespace UrGUI
             if (AllWindowsDisabled) GUI.enabled = false;
 
             // handle drag
-            if (isDraggable)
+            if (_isDraggable)
             {
                 // mouse drag
-                if (!AnyWindowDragging || isDragging)
+                if (!AnyWindowDragging || _isDragging)
                 {
                     var e = Event.current;
-                    if (e.type == EventType.MouseDown && new Rect(x, y, width, controlHeight * 1.25f).Contains(e.mousePosition))
+                    if (e.type == EventType.MouseDown && new Rect(_x, _y, _width, _controlHeight * 1.25f).Contains(e.mousePosition))
                     {
-                        isDragging = true;
+                        _isDragging = true;
                         AnyWindowDragging = true;
                     }
                     else if (e.type == EventType.MouseUp)
                     {
-                        isDragging = false;
+                        _isDragging = false;
                         AnyWindowDragging = false;
                     }
-                    if (e.type == EventType.MouseDrag && isDragging)
+                    if (e.type == EventType.MouseDrag && _isDragging)
                     {
-                        x += e.delta.x;
-                        y += e.delta.y;
+                        _x += e.delta.x;
+                        _y += e.delta.y;
                     }
                 }
             }
 
             // check if window isn't outside of screen
-            if (x < 0) x = 0;
-            if (y < 0) y = 0;
-            if (x + width > Screen.width) x = Screen.width - width;
-            if (y + height > Screen.height) y = Screen.height - height;
+            if (_x < 0) _x = 0;
+            if (_y < 0) _y = 0;
+            if (_x + _width > Screen.width) _x = Screen.width - _width;
+            if (_y + _height > Screen.height) _y = Screen.height - _height;
 
             // reset nextControlY
-            nextControlY = y + controlHeight + margin;
+            _nextControlY = _y + _controlHeight + _margin;
 
             // disable gui if it's dragging
-            if (isDragging)
+            if (_isDragging)
                 GUI.enabled = false;
 
             // Main window
-            if (mainSkin != null)
-                GUI.skin = mainSkin;
-            GUI.Box(new Rect(x, y, width, height), "");
+            if (_mainSkin != null)
+                GUI.skin = _mainSkin;
+            GUI.Box(new Rect(_x, _y, _width, _height), "");
 
             // window's title
-            if (titleSkin != null)
-                GUI.skin = titleSkin;
-            GUI.Box(new Rect(x, y, width, 25f), windowTitle);
+            if (_titleSkin != null)
+                GUI.skin = _titleSkin;
+            GUI.Box(new Rect(_x, _y, _width, 25f), _windowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
             // draw all controls
-            if (mainSkin != null)
-                GUI.skin = mainSkin;
-            foreach (var c in controls)
+            if (_mainSkin != null)
+                GUI.skin = _mainSkin;
+            foreach (var c in _controls)
                 c.Draw(NextControlRect());
 
             // reset GUI enabled
             GUI.enabled = true;
 
             // draw active option menu
-            if (dialogDrawer == null)
-                dialogDrawer = this;
-            if (dialogDrawer == this)
+            if (DialogDrawer == null)
+                DialogDrawer = this;
+            if (DialogDrawer == this)
                 if (ActiveOptionMenu != null)
                     ActiveOptionMenu();
         }
 
         private Rect NextControlRect()
         {
-            Rect r = new Rect(x + margin, nextControlY, width - (margin * 2), controlHeight);
-            nextControlY += controlHeight + controlSpace;
+            Rect r = new Rect(_x + _margin, _nextControlY, _width - (_margin * 2), _controlHeight);
+            _nextControlY += _controlHeight + _controlSpace;
             return r;
         }
 
@@ -199,20 +201,20 @@ namespace UrGUI
                 INIParser ini = new INIParser();
                 ini.Open(absolutePath);
 
-                string sectionName = $"GUIWindow.{windowTitle}";
+                string sectionName = $"GUIWindow.{_windowTitle}";
                 // write all values for GUIWindow
-                ini.WriteValue(sectionName, "windowTitle", windowTitle);
-                ini.WriteValue(sectionName, "x", x);
-                ini.WriteValue(sectionName, "y", y);
-                ini.WriteValue(sectionName, "width", width);
-                ini.WriteValue(sectionName, "height", height);
-                ini.WriteValue(sectionName, "margin", margin);
-                ini.WriteValue(sectionName, "controlHeight", controlHeight);
-                ini.WriteValue(sectionName, "controlSpace", controlSpace);
+                ini.WriteValue(sectionName, "windowTitle", _windowTitle);
+                ini.WriteValue(sectionName, "x", _x);
+                ini.WriteValue(sectionName, "y", _y);
+                ini.WriteValue(sectionName, "width", _width);
+                ini.WriteValue(sectionName, "height", _height);
+                ini.WriteValue(sectionName, "margin", _margin);
+                ini.WriteValue(sectionName, "controlHeight", _controlHeight);
+                ini.WriteValue(sectionName, "controlSpace", _controlSpace);
 
                 // write all controls' values
-                for (int i = 0; i < controls.Count; i++)
-                    controls[i].ExportData(i, sectionName, $"Control{i}.", ini);
+                for (int i = 0; i < _controls.Count; i++)
+                    _controls[i].ExportData(i, sectionName, $"Control{i}.", ini);
 
                 // close and save
                 ini.Close();
@@ -239,20 +241,20 @@ namespace UrGUI
                 INIParser ini = new INIParser();
                 ini.Open(absolutePath);
 
-                string sectionName = $"GUIWindow.{windowTitle}";
+                string sectionName = $"GUIWindow.{_windowTitle}";
                 // read all values for GUIWindow
-                windowTitle = ini.ReadValue(sectionName, "windowTitle", windowTitle);
-                x = ini.ReadValue(sectionName, "x", x);
-                y = ini.ReadValue(sectionName, "y", y);
-                width = ini.ReadValue(sectionName, "width", width);
-                height = ini.ReadValue(sectionName, "height", height);
-                margin = ini.ReadValue(sectionName, "margin", margin);
-                controlHeight = ini.ReadValue(sectionName, "controlHeight", controlHeight);
-                controlSpace = ini.ReadValue(sectionName, "controlSpace", controlSpace);
+                _windowTitle = ini.ReadValue(sectionName, "windowTitle", _windowTitle);
+                _x = ini.ReadValue(sectionName, "x", _x);
+                _y = ini.ReadValue(sectionName, "y", _y);
+                _width = ini.ReadValue(sectionName, "width", _width);
+                _height = ini.ReadValue(sectionName, "height", _height);
+                _margin = ini.ReadValue(sectionName, "margin", _margin);
+                _controlHeight = ini.ReadValue(sectionName, "controlHeight", _controlHeight);
+                _controlSpace = ini.ReadValue(sectionName, "controlSpace", _controlSpace);
 
                 // read all controls' values
-                for (int i = 0; i < controls.Count; i++)
-                    controls[i].ImportData(i, sectionName, $"Control{i}.", ini);
+                for (int i = 0; i < _controls.Count; i++)
+                    _controls[i].ImportData(i, sectionName, $"Control{i}.", ini);
 
                 // close and save
                 ini.Close();
@@ -265,11 +267,11 @@ namespace UrGUI
             }
         }
 
-        public bool LoadSkin(GUISkin _mainSkin, GUISkin _titleSkin)
+        public bool LoadSkin(GUISkin mainSkin, GUISkin titleSkin)
         {
-            if (mainSkin == null || titleSkin == null) return false;
-            mainSkin = _mainSkin;
-            titleSkin = _titleSkin;
+            if (this._mainSkin == null || this._titleSkin == null) return false;
+            this._mainSkin = mainSkin;
+            this._titleSkin = titleSkin;
 
             return true;
         }
@@ -280,8 +282,8 @@ namespace UrGUI
 
             if (asset == null) return false;
 
-            mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
-            titleSkin = asset.LoadAsset<GUISkin>(titleSkinName);
+            _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
+            _titleSkin = asset.LoadAsset<GUISkin>(titleSkinName);
             return true;
         }
 
@@ -419,217 +421,218 @@ namespace UrGUI
 
         internal class WLabel : WControl
         {
-            public GUIFormatting.AlignType alignment;
+            public GUIFormatting.AlignType Alignment;
 
-            private Rect rect = new Rect();
+            private Rect _rect = new Rect();
 
             internal WLabel(
                 string displayedString, GUIFormatting.AlignType alignment)
                 : base(displayedString)
             {
-                this.alignment = alignment;
+                this.Alignment = alignment;
             }
 
             internal override void Draw(Rect r)
             {
-                rect = r;
-                Vector2 pos = GUIFormatting.AlignControl(alignment, new Vector2(rect.x, rect.y),
-                    GUIFormatting.GetContentStringSize(displayedString), new Vector2(rect.width, rect.height));
-                rect.x = pos.x;
-                rect.y = pos.y;
+                _rect = r;
+                Vector2 pos = GUIFormatting.AlignControl(Alignment, new Vector2(_rect.x, _rect.y),
+                    GUIFormatting.GetContentStringSize(DisplayedString), new Vector2(_rect.width, _rect.height));
+                _rect.x = pos.x;
+                _rect.y = pos.y;
 
-                GUI.Label(rect, displayedString);
+                GUI.Label(_rect, DisplayedString);
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "alignment", (int)alignment); // enum to int
+                ini.WriteValue(sectionName, keyBaseName + "alignment", (int)Alignment); // enum to int
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                alignment = (GUIFormatting.AlignType)ini.ReadValue(sectionName, keyBaseName + "alignment", (int)alignment); // int to enum
+                Alignment = (GUIFormatting.AlignType)ini.ReadValue(sectionName, keyBaseName + "alignment", (int)Alignment); // int to enum
             }
         }
 
         internal class WButton : WControl
         {
-            private System.Action onPressed;
+            private readonly System.Action _onPressed;
 
             internal WButton(System.Action onPressed,
                 string displayedString)
                 : base(displayedString)
             {
-                this.onPressed = onPressed;
+                this._onPressed = onPressed;
             }
 
             internal override void Draw(Rect r)
             {
-                if (GUI.Button(r, displayedString))
-                    onPressed();
+                if (GUI.Button(r, DisplayedString))
+                    _onPressed();
             }
         }
 
         internal class WToggle : WControl
         {
-            public System.Action<bool> onValueChanged;
-            public bool value;
+            public readonly System.Action<bool> OnValueChanged;
+            
+            public bool Value;
 
             internal WToggle(System.Action<bool> onValueChanged, bool value,
                 string displayedString)
                 : base(displayedString)
             {
-                this.value = value;
-                this.onValueChanged = onValueChanged;
+                this.Value = value;
+                this.OnValueChanged = onValueChanged;
             }
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUI.Toggle(r, value, displayedString);
-                if (newValue != value)
-                    onValueChanged(newValue);
-                value = newValue;
+                var newValue = GUI.Toggle(r, Value, DisplayedString);
+                if (newValue != Value)
+                    OnValueChanged(newValue);
+                Value = newValue;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "value", value);
+                ini.WriteValue(sectionName, keyBaseName + "value", Value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+                Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
             }
         }
 
         internal class WSlider : WControl
         {
-            public System.Action<float> onValueChanged;
-            public float value;
+            public readonly System.Action<float> OnValueChanged;
+            public float Value;
 
-            private float min, max;
-            private bool numberIndicator, labelOnLeft;
-            private string numberIndicatorFormat;
+            private float _min, _max;
+            private bool _numberIndicator, _labelOnLeft;
+            private string _numberIndicatorFormat;
 
             internal WSlider(System.Action<float> onValueChanged, float value, float min, float max, bool numberIndicator, string numberIndicatorFormat,
                 string displayedString,
                 bool labelOnLeft = true)
                 : base(displayedString)
             {
-                this.onValueChanged = onValueChanged;
-                this.value = value;
-                this.min = min;
-                this.max = max;
-                this.numberIndicator = numberIndicator;
-                this.numberIndicatorFormat = numberIndicatorFormat;
-                this.labelOnLeft = labelOnLeft;
+                this.OnValueChanged = onValueChanged;
+                this.Value = value;
+                this._min = min;
+                this._max = max;
+                this._numberIndicator = numberIndicator;
+                this._numberIndicatorFormat = numberIndicatorFormat;
+                this._labelOnLeft = labelOnLeft;
             }
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUIControl.LabelSlider(r, displayedString, value, min, max, numberIndicator, numberIndicatorFormat, labelOnLeft, 5f);
+                var newValue = GUIControl.LabelSlider(r, DisplayedString, Value, _min, _max, _numberIndicator, _numberIndicatorFormat, _labelOnLeft, 5f);
 
                 // handle onChangedValue event 
-                if (newValue != value)
-                    onValueChanged(newValue);
-                value = newValue; 
+                if (!newValue.Equals(Value))
+                    OnValueChanged(newValue);
+                Value = newValue; 
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "value", value);
+                ini.WriteValue(sectionName, keyBaseName + "value", Value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+                Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
             }
         }
 
         internal class WTextField : WControl
         {
-            public System.Action<string> onValueChanged;
-            public string value;
+            public readonly System.Action<string> OnValueChanged;
+            public string Value;
 
-            private string regexReplace;
-            private int maxSymbolLength;
-            private bool labelOnLeft;
+            private string _regexReplace;
+            private int _maxSymbolLength;
+            private bool _labelOnLeft;
 
             internal WTextField(System.Action<string> onValueChanged, string value, int maxSymbolLength, string regexReplace,
                 string displayedString,
                 bool labelOnLeft = true)
                 : base(displayedString)
             {
-                this.onValueChanged = onValueChanged;
-                this.value = value;
-                this.regexReplace = regexReplace;
-                this.maxSymbolLength = maxSymbolLength;
-                this.labelOnLeft = labelOnLeft;
+                this.OnValueChanged = onValueChanged;
+                this.Value = value;
+                this._regexReplace = regexReplace;
+                this._maxSymbolLength = maxSymbolLength;
+                this._labelOnLeft = labelOnLeft;
             }
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUIControl.LabelTextField(r, displayedString, value, maxSymbolLength, regexReplace, labelOnLeft, 5f);
+                var newValue = GUIControl.LabelTextField(r, DisplayedString, Value, _maxSymbolLength, _regexReplace, _labelOnLeft, 5f);
 
                 // handle onChangedValue event 
-                if (newValue != value)
-                    onValueChanged(newValue);
-                value = newValue;
+                if (newValue != Value)
+                    OnValueChanged(newValue);
+                Value = newValue;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "value", value);
+                ini.WriteValue(sectionName, keyBaseName + "value", Value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+                Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
             }
         }
 
         internal class WFloatField : WControl
         {
-            public System.Action<float> onValueChanged;
-            public float value;
+            public readonly System.Action<float> OnValueChanged;
+            public float Value;
 
-            private int maxSymbolLength;
-            private bool labelOnLeft;
+            private int _maxSymbolLength;
+            private bool _labelOnLeft;
 
-            private readonly string regexReplace;
+            private readonly string _regexReplace;
 
             internal WFloatField(System.Action<float> onValueChanged, float value, int maxSymbolLength,
                 string displayedString,
                 bool labelOnLeft = true)
                 : base(displayedString)
             {
-                this.onValueChanged = onValueChanged;
-                this.value = value;
-                this.regexReplace = "[^0-9.,]";
-                this.maxSymbolLength = maxSymbolLength;
-                this.labelOnLeft = labelOnLeft;
+                this.OnValueChanged = onValueChanged;
+                this.Value = value;
+                this._regexReplace = "[^0-9.,]";
+                this._maxSymbolLength = maxSymbolLength;
+                this._labelOnLeft = labelOnLeft;
             }
 
             internal override void Draw(Rect r)
             {
                 // create TextField and replace all symbols that are not numbers or ',' / '.'
-                var stringResult = GUIControl.LabelTextField(r, displayedString, value.ToString(), maxSymbolLength, regexReplace, labelOnLeft, 5f);
+                var stringResult = GUIControl.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft, 5f);
 
                 // replace all commas to dots
                 stringResult = stringResult.Replace(',', '.');
@@ -638,29 +641,29 @@ namespace UrGUI
                 float.TryParse(stringResult, out float floatResult);
 
                 // handle onChangedValue event 
-                if (floatResult != value)
-                    onValueChanged(floatResult);
-                value = floatResult;
+                if (!floatResult.Equals(Value))
+                    OnValueChanged(floatResult);
+                Value = floatResult;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "value", value);
+                ini.WriteValue(sectionName, keyBaseName + "value", Value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+                Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
             }
         }
 
         internal class WColorPicker : WControl
         {
-            public Color value;
+            public Color Value;
 
             private System.Action<Color> onValueChanged;
             private bool IsPickerOpen { get => _isPickerOpen; set
@@ -674,31 +677,31 @@ namespace UrGUI
                 }
             }
             private bool _isPickerOpen = false;
-            private Rect rect;
+            private Rect _rect;
             internal WColorPicker(System.Action<Color> onValueChanged, Color clr,
                 string displayedString)
                 : base(displayedString)
             {
                 this.onValueChanged = onValueChanged;
-                this.value = clr;
+                this.Value = clr;
             }
 
             internal override void Draw(Rect r)
             {
-                rect = r;
-                Rect previewButtonRect = rect;
+                _rect = r;
+                Rect previewButtonRect = _rect;
                 previewButtonRect.width /= 3f;
                 previewButtonRect.x += previewButtonRect.width * 2f;
-                Rect labelRect = rect;
+                Rect labelRect = _rect;
                 labelRect.width *= 0.66666f;
 
                 // # COLOR PICKER #
                 // draw preview button
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
-                GUI.Label(labelRect, displayedString);
+                GUI.Label(labelRect, DisplayedString);
                 var oldColor = GUI.color;
-                GUI.color = value;
-                if (GUI.Button(previewButtonRect, string.Empty, whiteButtonGUIStyle))
+                GUI.color = Value;
+                if (GUI.Button(previewButtonRect, string.Empty, WhiteButtonGUIStyle))
                     IsPickerOpen = !IsPickerOpen;
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
                 GUI.color = oldColor;
@@ -708,36 +711,36 @@ namespace UrGUI
             {
                 float sliderWidth = 200;
                 float sliderHeight = 22;
-                Color newValue = GUIControl.ColorPicker(new Vector2(rect.x + rect.width - sliderWidth, rect.y + rect.height), value,
+                Color newValue = GUIControl.ColorPicker(new Vector2(_rect.x + _rect.width - sliderWidth, _rect.y + _rect.height), Value,
                     false, sliderWidth, sliderHeight);
 
                 // handle event
-                if (newValue != value)
+                if (newValue != Value)
                     onValueChanged.Invoke(newValue);
 
-                value = newValue;
+                Value = newValue;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "color", value);
+                ini.WriteValue(sectionName, keyBaseName + "color", Value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                value = ini.ReadValue(sectionName, keyBaseName + "color", value);
+                Value = ini.ReadValue(sectionName, keyBaseName + "color", Value);
             }
         }
 
         internal class WDropDown : WControl
         {
-            public System.Action<int> onValueChanged;
-            public Dictionary<int, string> list;
-            public int value;
+            public readonly System.Action<int> OnValueChanged;
+            public readonly Dictionary<int, string> ValuesList;
+            public int Value;
             private bool IsDropDownOpen { get => _isDropDownOpen;
                 set
                 {
@@ -749,62 +752,62 @@ namespace UrGUI
                         ActiveOptionMenu = null;
                 }
             }
-            private bool _isDropDownOpen = false;
-            private Vector2 scrollPos;
-            private Rect rect;
-            private Rect selectedRect;
-            private static GUIStyle DropDownOptionGUIStyle = null; //= GUI.skin.label;
 
-            internal WDropDown(System.Action<int> onValueChanged, int value, Dictionary<int, string> list,
+            private bool _isDropDownOpen = false;
+            private Vector2 _scrollPos;
+            private Rect _rect;
+            private Rect _selectedRect;
+            private static GUIStyle _dropDownOptionGUIStyle = null; //= GUI.skin.label;
+
+            internal WDropDown(System.Action<int> onValueChanged, int value, Dictionary<int, string> valuesList,
                 string displayedString)
                 : base(displayedString)
             {
-                this.onValueChanged = onValueChanged;
-                this.value = value;
-                this.list = list;
+                this.OnValueChanged = onValueChanged;
+                this.Value = value;
+                this.ValuesList = valuesList;
             }
 
             internal override void Draw(Rect r)
             {
                 // init
-                if (DropDownOptionGUIStyle == null)
+                if (_dropDownOptionGUIStyle == null)
                 {
-                    DropDownOptionGUIStyle = GUI.skin.label;
-                    DropDownOptionGUIStyle.hover.textColor = Color.gray;
-                    DropDownOptionGUIStyle.onHover.textColor = Color.gray;
+                    _dropDownOptionGUIStyle = GUI.skin.label;
+                    _dropDownOptionGUIStyle.hover.textColor = Color.gray;
+                    _dropDownOptionGUIStyle.onHover.textColor = Color.gray;
                 }
 
                 // calc all rects
-                rect = r;
-                Rect labelRect = rect;
+                _rect = r;
+                Rect labelRect = _rect;
                 labelRect.width /= 3f;
-                selectedRect = rect;
-                selectedRect.x += labelRect.width;
-                selectedRect.width = labelRect.width * 2f;
-                Rect selectedLabelRect = selectedRect;
+                _selectedRect = _rect;
+                _selectedRect.x += labelRect.width;
+                _selectedRect.width = labelRect.width * 2f;
+                Rect selectedLabelRect = _selectedRect;
                 selectedLabelRect.x += 5f; // offset
                 selectedLabelRect.width -= 5f; // offset
 
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
-                GUI.Label(labelRect, displayedString);
-                if (GUI.Button(selectedRect, string.Empty))
+                GUI.Label(labelRect, DisplayedString);
+                if (GUI.Button(_selectedRect, string.Empty))
                     IsDropDownOpen = !IsDropDownOpen;
-                GUI.Label(selectedLabelRect, list[value]);
+                GUI.Label(selectedLabelRect, ValuesList[Value]);
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
             }
 
             internal void DrawDropDown()
             {
-                var newValue = -1;
-                newValue = GUIControl.DropDown(new Vector2(selectedRect.x, selectedRect.y + selectedRect.height),
-                    list, scrollPos, out scrollPos, out bool isOpen, DropDownOptionGUIStyle, false, selectedRect.width);
+                var newValue = GUIControl.DropDown(new Vector2(_selectedRect.x, _selectedRect.y + _selectedRect.height),
+                    ValuesList, _scrollPos, out _scrollPos, out bool isOpen, _dropDownOptionGUIStyle, false, _selectedRect.width);
 
                 // handle event
-                if (newValue >= 0 & newValue != value)
-                    onValueChanged.Invoke(newValue);
+                if (newValue >= 0 & newValue != Value)
+                    OnValueChanged.Invoke(newValue);
 
                 if (newValue >= 0)
-                    value = newValue;
+                    Value = newValue;
 
                 IsDropDownOpen = isOpen;
             }
@@ -813,36 +816,36 @@ namespace UrGUI
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "value", value);
+                ini.WriteValue(sectionName, keyBaseName + "value", Value);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                value = ini.ReadValue(sectionName, keyBaseName + "value", value);
+                Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
             }
         }
 
         public abstract class WControl
         {
-            internal string displayedString;
+            internal string DisplayedString;
 
             internal WControl(string displayedString)
             {
-                this.displayedString = displayedString;
+                this.DisplayedString = displayedString;
             }
 
             internal abstract void Draw(Rect r);
 
             internal virtual void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
-                ini.WriteValue(sectionName, keyBaseName + "displayString", displayedString);
+                ini.WriteValue(sectionName, keyBaseName + "displayString", DisplayedString);
             }
 
             internal virtual void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
-                displayedString = ini.ReadValue(sectionName, keyBaseName + "displayString", displayedString);
+                DisplayedString = ini.ReadValue(sectionName, keyBaseName + "displayString", DisplayedString);
             }
         }
     }
