@@ -457,6 +457,19 @@ namespace UrGUI.ImGUI
         }
 
         /// <summary>
+        /// a simple int field control with label
+        /// </summary>
+        /// <param name="text">label's text</param>
+        /// <param name="onValueChanged"></param>
+        /// <param name="value">default value</param>
+        /// <param name="maxSymbolLength">maximum number of characters</param>
+        public void IntField(string text, System.Action<int> onValueChanged, int value, int maxSymbolLength)
+        {
+            var c = new GUIWindowControls.WIntField(onValueChanged, value, maxSymbolLength, text);
+            Add(c);
+        }
+        
+        /// <summary>
         /// a simple float field control with label
         /// </summary>
         /// <param name="text">label's text</param>

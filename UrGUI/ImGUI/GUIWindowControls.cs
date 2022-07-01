@@ -183,7 +183,7 @@ namespace UrGUI.ImGUI
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUIControl.LabelTextField(r, DisplayedString, Value, _maxSymbolLength, _regexReplace, _labelOnLeft, 5f);
+                var newValue = GUIControl.LabelTextField(r, DisplayedString, Value, _maxSymbolLength, _regexReplace, _labelOnLeft);
 
                 // handle onChangedValue event 
                 if (newValue != Value)
@@ -206,6 +206,56 @@ namespace UrGUI.ImGUI
             }
         }
 
+        internal class WIntField : WControl
+        {
+            public readonly System.Action<int> OnValueChanged;
+            public int Value;
+
+            private int _maxSymbolLength;
+            private bool _labelOnLeft;
+
+            private readonly string _regexReplace;
+
+            internal WIntField(System.Action<int> onValueChanged, int value, int maxSymbolLength,
+                string displayedString,
+                bool labelOnLeft = true)
+                : base(displayedString)
+            {
+                this.OnValueChanged = onValueChanged;
+                this.Value = value;
+                this._regexReplace = "[^0-9.,]";
+                this._maxSymbolLength = maxSymbolLength;
+                this._labelOnLeft = labelOnLeft;
+            }
+
+            internal override void Draw(Rect r)
+            {
+                var stringResult = GUIControl.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft);
+
+                // finally parse to int (ignore invalid entries)
+                int.TryParse(stringResult, out int intResult);
+
+                // handle onChangedValue event 
+                if (!intResult.Equals(Value))
+                    OnValueChanged(intResult);
+                Value = intResult;
+            }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ExportData(id, sectionName, keyBaseName, ini);
+
+                ini.WriteValue(sectionName, keyBaseName + "value", Value);
+            }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
+            {
+                base.ImportData(id, sectionName, keyBaseName, ini);
+
+                Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
+            }
+        }
+        
         internal class WFloatField : WControl
         {
             public readonly System.Action<float> OnValueChanged;
