@@ -155,4 +155,16 @@ private void OnGUI()
   ```
 
 </blockquote>
+ 
+<br>
 
+## Licensing & Credits:
+
+UrGUI is licensed under the MIT License. See [LICENSE](https://github.com/Hirashi3630/UrGUI/blob/main/LICENSE) for the full License.
+
+Third-party Libraries used as Source Code and/or bundled in Binary Form:
+- Unity Runtime Libraries are part of Unity Software.
+Their usage is subject to Unity Terms of Service, including Unity Software Additional Terms.
+
+This Repository is not sponsored by, affiliated with or endorsed by Unity Technologies or its affiliates.
+"Unity" is a trademark or a registered trademark of Unity Technologies or its affiliates in the U.S. and elsewhere.
