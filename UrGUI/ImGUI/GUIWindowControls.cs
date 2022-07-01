@@ -185,6 +185,10 @@ namespace UrGUI.ImGUI
             {
                 var newValue = GUIControl.LabelTextField(r, DisplayedString, Value, _maxSymbolLength, _regexReplace, _labelOnLeft);
 
+                // remove everything that matches regex
+                if (_regexReplace != string.Empty) 
+                    newValue = System.Text.RegularExpressions.Regex.Replace(newValue, _regexReplace, "");
+                
                 // handle onChangedValue event 
                 if (newValue != Value)
                     OnValueChanged(newValue);
@@ -211,10 +215,9 @@ namespace UrGUI.ImGUI
             public readonly System.Action<int> OnValueChanged;
             public int Value;
 
+            private string _regexReplace;
             private int _maxSymbolLength;
             private bool _labelOnLeft;
-
-            private readonly string _regexReplace;
 
             internal WIntField(System.Action<int> onValueChanged, int value, int maxSymbolLength,
                 string displayedString,
@@ -223,7 +226,7 @@ namespace UrGUI.ImGUI
             {
                 this.OnValueChanged = onValueChanged;
                 this.Value = value;
-                this._regexReplace = "[^0-9.,]";
+                this._regexReplace = "[^0-9]";
                 this._maxSymbolLength = maxSymbolLength;
                 this._labelOnLeft = labelOnLeft;
             }
@@ -232,11 +235,16 @@ namespace UrGUI.ImGUI
             {
                 var stringResult = GUIControl.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft);
 
+                // remove everything that matches regex
+                if (_regexReplace != string.Empty) 
+                    stringResult = System.Text.RegularExpressions.Regex.Replace(stringResult, _regexReplace, "");
+                
                 // finally parse to int (ignore invalid entries)
-                int.TryParse(stringResult, out int intResult);
-
+                long.TryParse(stringResult, out long longResult);
+                int intResult = longResult > int.MaxValue ? int.MaxValue : (int)longResult;
+                
                 // handle onChangedValue event 
-                if (!intResult.Equals(Value))
+                if (!longResult.Equals(Value))
                     OnValueChanged(intResult);
                 Value = intResult;
             }
@@ -261,10 +269,10 @@ namespace UrGUI.ImGUI
             public readonly System.Action<float> OnValueChanged;
             public float Value;
 
+            private string _regexReplace;
             private int _maxSymbolLength;
             private bool _labelOnLeft;
 
-            private readonly string _regexReplace;
 
             internal WFloatField(System.Action<float> onValueChanged, float value, int maxSymbolLength,
                 string displayedString,
@@ -283,11 +291,16 @@ namespace UrGUI.ImGUI
                 // create TextField and replace all symbols that are not numbers or ',' / '.'
                 var stringResult = GUIControl.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft, 5f);
 
+                // remove everything that matches regex
+                if (_regexReplace != string.Empty) 
+                    stringResult = System.Text.RegularExpressions.Regex.Replace(stringResult, _regexReplace, "");
+
                 // replace all commas to dots
                 stringResult = stringResult.Replace(',', '.');
 
                 // finally parse to float (ignore invalid entries)
-                float.TryParse(stringResult, out float floatResult);
+                double.TryParse(stringResult, out double doubleResult);
+                float floatResult = (float)doubleResult;
 
                 // handle onChangedValue event 
                 if (!floatResult.Equals(Value))
