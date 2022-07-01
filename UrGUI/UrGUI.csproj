@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImGUI\GUIWindow.cs" />
+    <Compile Include="ImGUI\GUIWindowControls.cs" />
     <Compile Include="ImGUI\Utils\GUIControl.cs" />
     <Compile Include="ImGUI\Utils\GUIFormatting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
