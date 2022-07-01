@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UrGUI.ImGUI.Utils;
 using UrGUI.Utils;
@@ -7,13 +8,16 @@ namespace UrGUI.ImGUI
 {
     public class GUIWindow
     {
-        protected GUIWindow() { }
+        protected GUIWindow()
+        {
+        }
 
-        public static readonly GUIStyle WhiteButtonGUIStyle = new GUIStyle { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
+        public static readonly GUIStyle WhiteButtonGUIStyle = new GUIStyle
+            { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
 
         public static float DynamicWindowsCurrentX = 0;
         public static readonly float DynamicWindowsMarginX = 10;
-        
+
         public static bool AllWindowsDisabled = false;
         public static bool AnyWindowDragging = false;
         public static System.Action ActiveOptionMenu = null;
@@ -22,8 +26,10 @@ namespace UrGUI.ImGUI
         public bool IsEnabled { get; set; }
 
         private string _windowTitle;
-        private float _x, _y, _width, _height, _margin, _controlHeight, _controlSpace;
+        private float _x, _y, _width, _height, _margin, _controlHeight, _controlSpace, _sameLineOffset;
         private bool _isDraggable;
+
+        private List<float> _nextLineRatios = new List<float>(0);
 
         private bool _isDragging;
 
@@ -46,10 +52,11 @@ namespace UrGUI.ImGUI
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <returns></returns>
         public static GUIWindow Begin(string windowTitle = "a Title", float startWidth = 200, float startHeight = 400,
-            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
+            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
+            bool isDraggable = true)
         {
             DynamicWindowsCurrentX += DynamicWindowsMarginX;
-            
+
             // get dynamic X position based on previously created GUIWindows
             float x = DynamicWindowsCurrentX;
             float y = DynamicWindowsMarginX;
@@ -77,22 +84,25 @@ namespace UrGUI.ImGUI
         /// <param name="isEnabled"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
-            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true, bool isDraggable = true)
+        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth,
+            float startHeight,
+            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
+            bool isDraggable = true)
         {
-            GUIWindow b = new GUIWindow();
-            b.IsEnabled = isEnabled;
-            b._windowTitle = windowTitle;
-            b._x = startX;
-            b._y = startY;
-            b._width = startWidth;
-            b._height = startHeight;
-            b._margin = margin;
-            b._controlHeight = controlHeight;
-            b._controlSpace = controlSpace;
-            b._isDraggable = isDraggable;
-
-            b._controls = new List<WControl>();
+            GUIWindow b = new GUIWindow
+            {
+                IsEnabled = isEnabled,
+                _windowTitle = windowTitle,
+                _x = startX,
+                _y = startY,
+                _width = startWidth,
+                _height = startHeight,
+                _margin = margin,
+                _controlHeight = controlHeight,
+                _controlSpace = controlSpace,
+                _isDraggable = isDraggable,
+                _controls = new List<WControl>()
+            };
 
             return b;
         }
@@ -104,6 +114,57 @@ namespace UrGUI.ImGUI
         public void Add(WControl c)
         {
             _controls.Add(c);
+
+            // check if control control is suppose to be on the same line
+            if (_nextLineRatios.Count > 0)
+            {
+                c.SameLineRatio = _nextLineRatios[0];
+                _nextLineRatios.RemoveAt(0);
+            }
+        }
+
+        /// <summary>
+        /// Put 2+ controls next to each other (-1 == not included)
+        /// functions on ratio points (15,5) == 3:1
+        /// </summary>
+        /// <param name="ratio1">(R) ratio of first control</param>
+        /// <param name="ratio2">(R)ratio of second control</param>
+        /// <param name="ratio3">ratio of third control</param>
+        /// <param name="ratio4">ratio of fourth control</param>
+        /// <param name="ratio5">ratio of fifth control</param>
+        /// <returns>true if successful</returns>
+        public bool SameLine(int ratio1 = 1, int ratio2 = 1, int ratio3 = -1, int ratio4 = -1, int ratio5 = -1)
+        {
+            if (_nextLineRatios.Count > 0) return false;
+            if (ratio1 <= 0 || ratio2 <= 0) return false;
+
+            // put all ratios in one list
+            List<int> ratios = new List<int>() { ratio1, ratio2 };
+            if (ratio3 > 0)
+            {
+                ratios.Add(ratio3);
+                if (ratio4 > 0)
+                {
+                    ratios.Add(ratio4);
+                    if (ratio5 > 0)
+                        ratios.Add(ratio5);
+                }
+            }
+
+            // normalize ratios
+            int lowest = ratios.Min();
+            List<float> normalizedRatios = new List<float>();
+            foreach (var r in ratios)
+                normalizedRatios.Add(r / (float)lowest);
+
+            // calculate 
+            float nOfNormalized = normalizedRatios.Sum();
+            normalizedRatios.Clear();
+            foreach (var r in ratios)
+                normalizedRatios.Add(r / nOfNormalized);
+
+            _nextLineRatios = normalizedRatios;
+            return true;
         }
 
         /// <summary>
@@ -124,7 +185,8 @@ namespace UrGUI.ImGUI
                 if (!AnyWindowDragging || _isDragging)
                 {
                     var e = Event.current;
-                    if (e.type == EventType.MouseDown && new Rect(_x, _y, _width, _controlHeight * 1.25f).Contains(e.mousePosition))
+                    if (e.type == EventType.MouseDown &&
+                        new Rect(_x, _y, _width, _controlHeight * 1.25f).Contains(e.mousePosition))
                     {
                         _isDragging = true;
                         AnyWindowDragging = true;
@@ -134,6 +196,7 @@ namespace UrGUI.ImGUI
                         _isDragging = false;
                         AnyWindowDragging = false;
                     }
+
                     if (e.type == EventType.MouseDrag && _isDragging)
                     {
                         _x += e.delta.x;
@@ -169,8 +232,11 @@ namespace UrGUI.ImGUI
             // draw all controls
             if (_mainSkin != null)
                 GUI.skin = _mainSkin;
+
+            // draw controls
             foreach (var c in _controls)
-                c.Draw(NextControlRect());
+                c.Draw(NextControlRect(c.SameLineRatio));
+            
 
             // reset GUI enabled
             GUI.enabled = true;
@@ -183,10 +249,28 @@ namespace UrGUI.ImGUI
                     ActiveOptionMenu();
         }
 
-        private Rect NextControlRect()
+        private Rect NextControlRect(float sameLineRatio)
         {
-            Rect r = new Rect(_x + _margin, _nextControlY, _width - (_margin * 2), _controlHeight);
-            _nextControlY += _controlHeight + _controlSpace;
+            var fullControlWidth = _width - (_margin * 2);
+            Rect r = new Rect(_x + _margin + _sameLineOffset, _nextControlY, fullControlWidth, _controlHeight);
+            
+            if (sameLineRatio.Equals(1)) 
+                _nextControlY += _controlHeight + _controlSpace;
+            
+            // handle same line
+            else 
+            {
+                r.width *= sameLineRatio;
+                _sameLineOffset += r.width;
+                
+                // reset if it's last control
+                if (_sameLineOffset.Equals(fullControlWidth))
+                {
+                    _nextControlY += _controlHeight + _controlSpace; // offset Y for next control
+                    _sameLineOffset = 0;
+                }
+            }
+
             return r;
         }
 
@@ -194,7 +278,7 @@ namespace UrGUI.ImGUI
         /// Save a configuration of GUIWindow that can be later loaded
         /// </summary>
         /// <param name="absolutePath">Absolute path to .ini file (created if it does not exists)</param>
-        /// <returns>true if succesfull</returns>
+        /// <returns>true if successful</returns>
         public bool SaveCfg(string absolutePath)
         {
             try
@@ -232,7 +316,7 @@ namespace UrGUI.ImGUI
         /// Loads a configuration of GUIWindow and applies it 
         /// </summary>
         /// <param name="absolutePath">Absolute path to .ini file</param>
-        /// <returns>true if succesfull</returns>
+        /// <returns>true if successful</returns>
         public bool LoadCfg(string absolutePath)
         {
             if (!System.IO.File.Exists(absolutePath)) return false;
@@ -307,9 +391,9 @@ namespace UrGUI.ImGUI
         /// a simple text control
         /// </summary>
         /// <param name="text">label's text</param>
-        /// <param name="alignment">aligment inside of control box</param>
+        /// <param name="alignment">alignment inside of control box</param>
         public void Label(string text,
-                GUIFormatting.AlignType alignment = GUIFormatting.AlignType.LeftTop)
+            GUIFormatting.AlignType alignment = GUIFormatting.AlignType.LeftTop)
         {
             var c = new GUIWindowControls.WLabel(text, alignment);
             Add(c);
@@ -333,7 +417,7 @@ namespace UrGUI.ImGUI
         /// <param name="onValueChanged"></param>
         /// <param name="value">default value</param>
         public void Toggle(string text, System.Action<bool> onValueChanged,
-                bool value = false)
+            bool value = false)
         {
             var c = new GUIWindowControls.WToggle(onValueChanged, value, text);
             Add(c);
@@ -350,9 +434,10 @@ namespace UrGUI.ImGUI
         /// <param name="numberIndicator">if number indicator showing current value</param>
         /// <param name="numberIndicatorFormat">String.Format value of indicator</param>
         public void Slider(string text, System.Action<float> onValueChanged, float value, float min, float max,
-                bool numberIndicator = false, string numberIndicatorFormat = "0.##")
+            bool numberIndicator = false, string numberIndicatorFormat = "0.##")
         {
-            var c = new GUIWindowControls.WSlider(onValueChanged, value, min, max, numberIndicator, numberIndicatorFormat, text);
+            var c = new GUIWindowControls.WSlider(onValueChanged, value, min, max, numberIndicator,
+                numberIndicatorFormat, text);
             Add(c);
         }
 
@@ -365,7 +450,7 @@ namespace UrGUI.ImGUI
         /// <param name="maxSymbolLength">maximum number of characters</param>
         /// <param name="regexReplace">regex filter for unwanted characters typed by user</param>
         public void TextField(string text, System.Action<string> onValueChanged, string value, int maxSymbolLength,
-                string regexReplace = "")
+            string regexReplace = "")
         {
             var c = new GUIWindowControls.WTextField(onValueChanged, value, maxSymbolLength, regexReplace, text);
             Add(c);

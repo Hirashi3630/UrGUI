@@ -264,7 +264,7 @@ namespace UrGUI.ImGUI
         {
             public Color Value;
 
-            private System.Action<Color> onValueChanged;
+            private readonly System.Action<Color> _onValueChanged;
             private bool IsPickerOpen { get => _isPickerOpen; set
                 {
                     _isPickerOpen = value;
@@ -281,7 +281,7 @@ namespace UrGUI.ImGUI
                 string displayedString)
                 : base(displayedString)
             {
-                this.onValueChanged = onValueChanged;
+                this._onValueChanged = onValueChanged;
                 this.Value = clr;
             }
 
@@ -315,7 +315,7 @@ namespace UrGUI.ImGUI
 
                 // handle event
                 if (newValue != Value)
-                    onValueChanged.Invoke(newValue);
+                    _onValueChanged.Invoke(newValue);
 
                 Value = newValue;
             }
@@ -430,6 +430,8 @@ namespace UrGUI.ImGUI
     
     public abstract class WControl
     {
+        internal float SameLineRatio = 1;
+        
         internal string DisplayedString;
 
         internal WControl(string displayedString)
