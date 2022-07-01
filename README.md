@@ -9,6 +9,9 @@
 
 ----
 
+# Warning
+This project is in process of being partially rewritten, wiki might not be accurate - use examples if available
+
 <br>
 
 ## Usage

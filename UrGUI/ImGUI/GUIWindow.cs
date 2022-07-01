@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UrGUI.ImGUI.Utils;
 using UrGUI.Utils;
 
-namespace UrGUI
+namespace UrGUI.ImGUI
 {
     public class GUIWindow
     {

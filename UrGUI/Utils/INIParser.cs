@@ -1,7 +1,7 @@
 /*******************************
 Version: 1.0
 Project Boon https://assetstore.unity.com/publishers/9446
-modified by me
+modified by Hirashi3630
 *******************************/
 
 using System;
