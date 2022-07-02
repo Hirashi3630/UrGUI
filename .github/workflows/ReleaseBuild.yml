@@ -1,0 +1,29 @@
+name: ReleaseBuild
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Create Release"
+    runs-on: [windows-latest]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Build the solution
+      run: msbuild UrGUI.sln /p:Configuration=Release
+      
+    - name: Upload Assembly Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dll-zip-build
+        path: UrGUI\bin\Release\UrGUI.dll
