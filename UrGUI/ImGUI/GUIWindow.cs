@@ -27,7 +27,7 @@ namespace UrGUI.ImGUI
 
         private string _windowTitle;
         private float _x, _y, _width, _height, _margin, _controlHeight, _controlSpace, _sameLineOffset;
-        private bool _isDraggable;
+        private bool _isDraggable, _dynamicHeight;
 
         private List<float> _nextLineRatios = new List<float>(0);
 
@@ -44,16 +44,17 @@ namespace UrGUI.ImGUI
         /// </summary>
         /// <param name="windowTitle">Window's title shown in the header</param>
         /// <param name="startWidth">Window's width</param>
-        /// <param name="startHeight">Window's height</param>
+        /// <param name="startHeight">Window's height (if dynamicHeight is true startHeight is ignored)</param>
         /// <param name="margin">Margin around individual controls</param>
         /// <param name="controlHeight">Control's height</param>
         /// <param name="controlSpace">Vertical space between controls</param>
         /// <param name="isEnabled"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
+        /// <param name="dynamicHeight">If true, startHeight is ignored</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle = "a Title", float startWidth = 200, float startHeight = 400,
+        public static GUIWindow Begin(string windowTitle = "a Title", float startWidth = 200,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
-            bool isDraggable = true)
+            bool isDraggable = true, bool dynamicHeight = true)
         {
             DynamicWindowsCurrentX += DynamicWindowsMarginX;
 
@@ -62,11 +63,11 @@ namespace UrGUI.ImGUI
             float y = DynamicWindowsMarginX;
             // set default size
             float width = startWidth;
-            float height = startHeight;
+            float height = 400;
 
             DynamicWindowsCurrentX += width + DynamicWindowsMarginX;
 
-            return Begin(windowTitle, x, y, width, height, margin, controlHeight, controlSpace, isEnabled, isDraggable);
+            return Begin(windowTitle, x, y, width, height, margin, controlHeight, controlSpace, isEnabled, isDraggable, dynamicHeight);
         }
 
 
@@ -83,11 +84,11 @@ namespace UrGUI.ImGUI
         /// <param name="controlSpace">Vertical space between controls</param>
         /// <param name="isEnabled"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
+        /// <param name="dynamicHeight">If true, startHeight is ignored</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth,
-            float startHeight,
+        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
-            bool isDraggable = true)
+            bool isDraggable = true, bool dynamicHeight = false)
         {
             GUIWindow b = new GUIWindow
             {
@@ -101,6 +102,7 @@ namespace UrGUI.ImGUI
                 _controlHeight = controlHeight,
                 _controlSpace = controlSpace,
                 _isDraggable = isDraggable,
+                _dynamicHeight = dynamicHeight,
                 _controls = new List<WControl>()
             };
 
@@ -120,6 +122,37 @@ namespace UrGUI.ImGUI
             {
                 c.SameLineRatio = _nextLineRatios[0];
                 _nextLineRatios.RemoveAt(0);
+            }
+            
+            // calculate dynamic height
+            if (_dynamicHeight)
+            {
+                var titleHeight = 25f + _margin;
+                var controlHeight= (_controlHeight + _controlSpace);
+                var nLines = 0;
+                var sameLineThreshold = 1f;
+
+                // no idea how to simplify this foreach, but it works
+                foreach (var i in _controls)
+                {
+                    // handle SameLine
+                    if (i.SameLineRatio.Equals(1) ||
+                        sameLineThreshold < 0.05f)
+                    {
+                        nLines++;
+                        sameLineThreshold = 1; // reset threshold
+                    }
+                    else
+                    {
+                        sameLineThreshold -= i.SameLineRatio;
+                        if (sameLineThreshold < 0.05f)
+                            nLines++;
+                    }
+
+                Debug.Log($"{nLines} -> threshold: {sameLineThreshold}; ");
+                }
+                
+                _height = titleHeight + controlHeight * nLines;
             }
         }
 
@@ -229,7 +262,6 @@ namespace UrGUI.ImGUI
             GUI.Box(new Rect(_x, _y, _width, 25f), _windowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
-            // draw all controls
             if (_mainSkin != null)
                 GUI.skin = _mainSkin;
 
