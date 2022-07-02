@@ -149,7 +149,6 @@ namespace UrGUI.ImGUI
                             nLines++;
                     }
 
-                Debug.Log($"{nLines} -> threshold: {sameLineThreshold}; ");
                 }
                 
                 _height = titleHeight + controlHeight * nLines;
