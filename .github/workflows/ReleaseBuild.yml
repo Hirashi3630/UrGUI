@@ -25,5 +25,5 @@ jobs:
     - name: Upload Assembly Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: dll-zip-build
+        name: UrGUI.dll
         path: UrGUI\bin\Release\UrGUI.dll

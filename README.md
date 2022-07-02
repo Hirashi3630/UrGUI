@@ -1,7 +1,7 @@
 
 <h1 align="center">UrGUI</h1>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![GitHub issues](https://img.shields.io/github/issues/Hirashi3630/UrGUI) [![CodeFactor](https://www.codefactor.io/repository/github/hirashi3630/urgui/badge/main)](https://www.codefactor.io/repository/github/hirashi3630/urgui/overview/main) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![GitHub issues](https://img.shields.io/github/issues/Hirashi3630/UrGUI) [![Workflow Badge](https://github.com/Hirashi3630/UrGUI/actions/workflows/ReleaseBuild.yml/badge.svg)](https://github.com/Hirashi3630/UrGUI/actions/workflows/ReleaseBuild.yml) [![CodeFactor](https://www.codefactor.io/repository/github/hirashi3630/urgui/badge/main)](https://www.codefactor.io/repository/github/hirashi3630/urgui/overview/main)
 
 > UrGUI: easy to use extension for Unity IMGUI system
 > <br><br>
@@ -9,10 +9,15 @@
 
 ----
 
-# Warning
+# WARNING
 This project is in process of being partially rewritten, wiki might not be accurate - use examples if available
 
 <br>
+
+## Getting Started
+
+1. Get built assembly from [Release page](https://github.com/Hirashi3630/UrGUI/releases)
+2. Download source code and build it yourself
 
 ## Usage
 
@@ -40,12 +45,12 @@ private void OnGUI()
 
 <details><summary>I want to set my own position and size!</summary><blockquote>
 
-  (x, y, width, height)
+(x, y, width, height)
 
   ```cs
   window1 = GUIWindow.Begin("window1's title", 10, 10, 200, 400);
   ```
-  
+
 </blockquote></details>
 
 <br>
@@ -54,9 +59,9 @@ private void OnGUI()
 
 <blockquote>
 
-  #### Space
-  
-  *same as empty label*
+#### Space
+
+*same as empty label*
 
   ```cs
   window1.Space("Lorem ipsum");
@@ -64,10 +69,10 @@ private void OnGUI()
 
 <br><br>
 
-  #### Label
+#### Label
 
 <img src="Assets/Media/label_showcase1.png?raw=true" alt="label_showcase">
-  
+
 
   ```cs
   window1.Label("Lorem ipsum");
@@ -75,76 +80,76 @@ private void OnGUI()
 
 <br><br>
 
-  #### Button
+#### Button
 
   <img src="Assets/Media/button_showcase1.png?raw=true" alt="button_showcase">
-  
+
 
   ```cs
   window1.Button("Press me!", () => print("Button has been pressed!"));
   ```
 
 <br><br>
-  
-  #### Slider
+
+#### Slider
 
   <img src="Assets/Media/slider_showcase1.gif?raw=true" alt="slider_showcase">
-  
+
 
   ```cs
   window1.Slider("Slider:", (value) => print($"Toggle value is now {value}"), 0.5f, 0f, 1f, true);
   ```
 
 <br><br>
-  
-  #### TextField
+
+#### TextField
 
   <img src="Assets/Media/textfield_showcase1.gif?raw=true" alt="textfield_showcase">
-  
+
 
   ```cs
   window1.TextField("Name:", (value) => Debug.Log($"TextField has been changed to '{value}'"), "Sample Text", 64);
   ```
 
 <br><br>
-  
-  #### FloatField
+
+#### FloatField
 
   <img src="Assets/Media/floatfield_showcase1.gif?raw=true" alt="floatfield_showcase">
-  
+
 
   ```cs
   window1.FloatField("X:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 12.34f, 20);
   ```
 
 <br><br>
-  
-  #### Toggle
+
+#### Toggle
 
   <img src="Assets/Media/toggle_showcase1.gif?raw=true" alt="toggle_showcase">
-  
+
 
   ```cs
   window1.Toggle("Toggle me!", (value) => print($"Toggle value is now {value}"));
   ```
 
 <br><br>
-  
-  #### ColorPicker
+
+#### ColorPicker
 
   <img src="Assets/Media/colorpicker_showcase1.gif?raw=true" alt="colorpicker_showcase">
-  
+
 
   ```cs
   window1.ColorPicker("Cube clr:", (clr) => Debug.Log($"Color has been changed to {clr}"), Color.red);
   ```
 
 <br><br>
-  
-  #### DropDown
+
+#### DropDown
 
   <img src="Assets/Media/dropdown_showcase1.gif?raw=true" alt="dropdown_showcase">
-  
+
 
   ```cs
   var selection = new Dictionary<int, string>();
@@ -155,7 +160,7 @@ private void OnGUI()
   ```
 
 </blockquote>
- 
+
 <br>
 
 ## Licensing & Credits:
@@ -164,7 +169,7 @@ UrGUI is licensed under the MIT License. See [LICENSE](https://github.com/Hirash
 
 Third-party Libraries used as Source Code and/or bundled in Binary Form:
 - Unity Runtime Libraries are part of Unity Software.
-Their usage is subject to Unity Terms of Service, including Unity Software Additional Terms.
+  Their usage is subject to Unity Terms of Service, including Unity Software Additional Terms.
 
 This Repository is not sponsored by, affiliated with or endorsed by Unity Technologies or its affiliates.
 "Unity" is a trademark or a registered trademark of Unity Technologies or its affiliates in the U.S. and elsewhere.
