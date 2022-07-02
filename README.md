@@ -16,8 +16,15 @@ This project is in process of being partially rewritten, wiki might not be accur
 
 ## Getting Started
 
-1. Get built assembly from [Release page](https://github.com/Hirashi3630/UrGUI/releases)
+1. Get built assembly from [Release page](https://github.com/Hirashi3630/UrGUI/releases) _(binary doesn't contain Unity dlls, use game's or [editor's](https://docs.unity3d.com/Manual/UsingDLL.html) or [here](https://github.com/Hirashi3630/UrGUI/tree/main/Assemblies/))_
 2. Download source code and build it yourself
+
+### MelonLoader
+
+ - put `UrGUI.dll` in `/UserLibs/`
+
+<br>
+
 
 ## Usage
 
@@ -64,7 +71,7 @@ private void OnGUI()
 *same as empty label*
 
   ```cs
-  window1.Space("Lorem ipsum");
+  window1.Space();
   ```
 
 <br><br>
@@ -102,28 +109,6 @@ private void OnGUI()
 
 <br><br>
 
-#### TextField
-
-  <img src="Assets/Media/textfield_showcase1.gif?raw=true" alt="textfield_showcase">
-
-
-  ```cs
-  window1.TextField("Name:", (value) => Debug.Log($"TextField has been changed to '{value}'"), "Sample Text", 64);
-  ```
-
-<br><br>
-
-#### FloatField
-
-  <img src="Assets/Media/floatfield_showcase1.gif?raw=true" alt="floatfield_showcase">
-
-
-  ```cs
-  window1.FloatField("X:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 12.34f, 20);
-  ```
-
-<br><br>
-
 #### Toggle
 
   <img src="Assets/Media/toggle_showcase1.gif?raw=true" alt="toggle_showcase">
@@ -157,6 +142,39 @@ private void OnGUI()
       selection.Add(i, $"Choice n.{i}");
 
   window1.DropDown("Selection:", (id) => print($"'{id}'. has been selected!"), 0,  selection); 
+  ```
+
+<br><br>
+
+#### TextField
+
+  <img src="Assets/Media/textfield_showcase1.gif?raw=true" alt="textfield_showcase">
+
+
+  ```cs
+  window1.TextField("Name:", (value) => Debug.Log($"TextField has been changed to '{value}'"), "Sample Text");
+  ```
+
+<br><br>
+
+#### IntField
+
+  <img src="Assets/Media/intfield_showcase1.gif?raw=true" alt="intfield_showcase">
+
+
+  ```cs
+  window1.IntField("X:", (value) => Debug.Log($"IntField has been changed to '{value}'"), 12345);
+  ```
+
+<br><br>
+
+#### FloatField
+
+  <img src="Assets/Media/floatfield_showcase1.gif?raw=true" alt="floatfield_showcase">
+
+
+  ```cs
+  window1.FloatField("X:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 12.34f, 20);
   ```
 
 </blockquote>
