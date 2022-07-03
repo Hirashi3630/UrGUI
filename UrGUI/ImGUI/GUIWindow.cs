@@ -385,7 +385,7 @@ namespace UrGUI.ImGUI
 
         public bool LoadSkin(GUISkin mainSkin, GUISkin titleSkin)
         {
-            if (this._mainSkin == null || this._titleSkin == null) return false;
+            if (mainSkin == null || titleSkin == null) return false;
             this._mainSkin = mainSkin;
             this._titleSkin = titleSkin;
 
