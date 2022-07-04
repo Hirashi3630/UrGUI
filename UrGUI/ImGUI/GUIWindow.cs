@@ -67,9 +67,11 @@ namespace UrGUI.ImGUI
 
         public bool IsEnabled { get; set; }
 
-        private string _windowTitle;
-        private float _x, _y, _width, _height, _margin, _controlHeight, _controlSpace, _sameLineOffset;
-        private bool _isDraggable, _dynamicHeight;
+        public string WindowTitle;
+        public float X, Y, Width, Height;
+        public bool IsDraggable, DynamicHeight;
+        
+        private float _startX, _startY, _margin, _controlHeight, _controlSpace, _sameLineOffset;
 
         private List<float> _nextLineRatios = new List<float>(0);
 
@@ -135,20 +137,22 @@ namespace UrGUI.ImGUI
             GUIWindow b = new GUIWindow
             {
                 IsEnabled = isEnabled,
-                _windowTitle = windowTitle,
-                _x = startX,
-                _y = startY,
-                _width = startWidth,
-                _height = startHeight,
+                WindowTitle = windowTitle,
+                X = startX,
+                Y = startY,
+                Width = startWidth,
+                Height = startHeight,
                 _margin = margin,
                 _controlHeight = controlHeight,
                 _controlSpace = controlSpace,
-                _isDraggable = isDraggable,
-                _dynamicHeight = dynamicHeight,
+                IsDraggable = isDraggable,
+                DynamicHeight = dynamicHeight,
                 _controls = new List<WControl>()
             };
 
             b._mainSkin = _defaultSkin;
+            b._startX = startX;
+            b._startY = startY;
 
             return b;
         }
@@ -171,14 +175,14 @@ namespace UrGUI.ImGUI
             if (AllWindowsDisabled) GUI.enabled = false;
 
             // handle drag
-            if (_isDraggable)
+            if (IsDraggable)
             {
                 // mouse drag
                 if (!AnyWindowDragging || _isDragging)
                 {
                     var e = Event.current;
                     if (e.type == EventType.MouseDown &&
-                        new Rect(_x, _y, _width, _controlHeight * 1.25f).Contains(e.mousePosition))
+                        new Rect(X, Y, Width, _controlHeight * 1.25f).Contains(e.mousePosition))
                     {
                         _isDragging = true;
                         AnyWindowDragging = true;
@@ -191,30 +195,30 @@ namespace UrGUI.ImGUI
 
                     if (e.type == EventType.MouseDrag && _isDragging)
                     {
-                        _x += e.delta.x;
-                        _y += e.delta.y;
+                        X += e.delta.x;
+                        Y += e.delta.y;
                     }
                 }
             }
 
             // check if window isn't outside of screen
-            if (_x < 0) _x = 0;
-            if (_y < 0) _y = 0;
-            if (_x + _width > Screen.width) _x = Screen.width - _width;
-            if (_y + _height > Screen.height) _y = Screen.height - _height;
+            if (X < 0) X = 0;
+            if (Y < 0) Y = 0;
+            if (X + Width > Screen.width) X = Screen.width - Width;
+            if (Y + Height > Screen.height) Y = Screen.height - Height;
 
             // reset nextControlY
-            _nextControlY = _y + _controlHeight + _margin;
+            _nextControlY = Y + _controlHeight + _margin;
 
             // disable gui if it's dragging
             if (_isDragging)
                 GUI.enabled = false;
 
             // Main window
-            GUI.Box(new Rect(_x, _y, _width, _height), "");
+            GUI.Box(new Rect(X, Y, Width, Height), "");
 
             // window's title
-            GUI.Box(new Rect(_x, _y, _width, 25f), _windowTitle);
+            GUI.Box(new Rect(X, Y, Width, 25f), WindowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
             if (_mainSkin != null)
@@ -235,6 +239,15 @@ namespace UrGUI.ImGUI
                     ActiveOptionMenu();
         }
 
+        /// <summary>
+        /// Resets to starting position (useful when using dynamic position)
+        /// </summary>
+        public void ResetPosition()
+        {
+            X = _startX;
+            Y = _startY;
+        }
+        
         #region Config
         
         /// <summary>
@@ -249,13 +262,13 @@ namespace UrGUI.ImGUI
                 INIParser ini = new INIParser();
                 ini.Open(absolutePath);
 
-                string sectionName = $"GUIWindow.{_windowTitle}";
+                string sectionName = $"GUIWindow.{WindowTitle}";
                 // write all values for GUIWindow
-                ini.WriteValue(sectionName, "windowTitle", _windowTitle);
-                ini.WriteValue(sectionName, "x", _x);
-                ini.WriteValue(sectionName, "y", _y);
-                ini.WriteValue(sectionName, "width", _width);
-                ini.WriteValue(sectionName, "height", _height);
+                ini.WriteValue(sectionName, "windowTitle", WindowTitle);
+                ini.WriteValue(sectionName, "x", X);
+                ini.WriteValue(sectionName, "y", Y);
+                ini.WriteValue(sectionName, "width", Width);
+                ini.WriteValue(sectionName, "height", Height);
                 ini.WriteValue(sectionName, "margin", _margin);
                 ini.WriteValue(sectionName, "controlHeight", _controlHeight);
                 ini.WriteValue(sectionName, "controlSpace", _controlSpace);
@@ -289,13 +302,13 @@ namespace UrGUI.ImGUI
                 INIParser ini = new INIParser();
                 ini.Open(absolutePath);
 
-                string sectionName = $"GUIWindow.{_windowTitle}";
+                string sectionName = $"GUIWindow.{WindowTitle}";
                 // read all values for GUIWindow
-                _windowTitle = ini.ReadValue(sectionName, "windowTitle", _windowTitle);
-                _x = ini.ReadValue(sectionName, "x", _x);
-                _y = ini.ReadValue(sectionName, "y", _y);
-                _width = ini.ReadValue(sectionName, "width", _width);
-                _height = ini.ReadValue(sectionName, "height", _height);
+                WindowTitle = ini.ReadValue(sectionName, "windowTitle", WindowTitle);
+                X = ini.ReadValue(sectionName, "x", X);
+                Y = ini.ReadValue(sectionName, "y", Y);
+                Width = ini.ReadValue(sectionName, "width", Width);
+                Height = ini.ReadValue(sectionName, "height", Height);
                 _margin = ini.ReadValue(sectionName, "margin", _margin);
                 _controlHeight = ini.ReadValue(sectionName, "controlHeight", _controlHeight);
                 _controlSpace = ini.ReadValue(sectionName, "controlSpace", _controlSpace);
@@ -387,8 +400,8 @@ namespace UrGUI.ImGUI
 
         private Rect NextControlRect(float sameLineRatio)
         {
-            var fullControlWidth = _width - (_margin * 2);
-            Rect r = new Rect(_x + _margin + _sameLineOffset, _nextControlY, fullControlWidth, _controlHeight);
+            var fullControlWidth = Width - (_margin * 2);
+            Rect r = new Rect(X + _margin + _sameLineOffset, _nextControlY, fullControlWidth, _controlHeight);
             
             if (sameLineRatio.Equals(1)) 
                 _nextControlY += _controlHeight + _controlSpace;
@@ -426,7 +439,7 @@ namespace UrGUI.ImGUI
             }
             
             // calculate dynamic height
-            if (_dynamicHeight)
+            if (DynamicHeight)
             {
                 var titleHeight = 25f + _margin;
                 var controlHeight= (_controlHeight + _controlSpace);
@@ -452,7 +465,7 @@ namespace UrGUI.ImGUI
 
                 }
                 
-                _height = titleHeight + (controlHeight * nLines);
+                Height = titleHeight + (controlHeight * nLines);
             }
         }
         
@@ -575,7 +588,7 @@ namespace UrGUI.ImGUI
         /// <param name="value">default value</param>
         /// <param name="maxSymbolLength">maximum number of characters</param>
         /// <param name="regexReplace">regex filter for unwanted characters typed by user</param>
-        public void TextField(string text, System.Action<string> onValueChanged, string value, int maxSymbolLength,
+        public void TextField(string text, System.Action<string> onValueChanged, string value, int maxSymbolLength = int.MaxValue,
             string regexReplace = "")
         {
             var c = new GUIWindowControls.WTextField(onValueChanged, value, maxSymbolLength, regexReplace, text);
@@ -589,7 +602,7 @@ namespace UrGUI.ImGUI
         /// <param name="onValueChanged"></param>
         /// <param name="value">default value</param>
         /// <param name="maxSymbolLength">maximum number of characters</param>
-        public void IntField(string text, System.Action<int> onValueChanged, int value, int maxSymbolLength)
+        public void IntField(string text, System.Action<int> onValueChanged, int value, int maxSymbolLength = int.MaxValue)
         {
             var c = new GUIWindowControls.WIntField(onValueChanged, value, maxSymbolLength, text);
             Add(c);
@@ -602,7 +615,7 @@ namespace UrGUI.ImGUI
         /// <param name="onValueChanged"></param>
         /// <param name="value">default value</param>
         /// <param name="maxSymbolLength">maximum number of characters</param>
-        public void FloatField(string text, System.Action<float> onValueChanged, float value, int maxSymbolLength)
+        public void FloatField(string text, System.Action<float> onValueChanged, float value, int maxSymbolLength = int.MaxValue)
         {
             var c = new GUIWindowControls.WFloatField(onValueChanged, value, maxSymbolLength, text);
             Add(c);
