@@ -65,5 +65,10 @@ public class CreateAssetBundles
 
 ## Featured skins
 
-### [ocornut](ocornut/README.md)<br>
+### [default](default/README.md)<br>
+<img src="../Assets/Skins/Media/default-guiwindowexample1.png?raw=true" alt="default-guiwindowexample1">
+
+<!--
+### [ocornut](ocornut (LEGACY)/README.md)<br>
 <img src="../Assets/Skins/Media/ocornut-guiwindowexample1.png?raw=true" alt="ocornut-guiwindowexample1">
+-->

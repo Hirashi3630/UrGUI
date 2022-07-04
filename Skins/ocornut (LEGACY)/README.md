@@ -1,3 +1,8 @@
+# WARNING
+this skin does not longer work.. I lost original `.guiskin` file
+
+<br><br>
+
 # ocornut skin
 
 As the name indicates, this skin is heavily inspired by the one and only [hero](https://github.com/ocornut/) - creator of [Dear IMGUI](https://github.com/ocornut/imgui).

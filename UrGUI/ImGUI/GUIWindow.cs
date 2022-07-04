@@ -4,6 +4,9 @@ using UnityEngine;
 using UrGUI.ImGUI.Utils;
 using UrGUI.Utils;
 
+using System.Reflection;
+using System.IO;
+
 namespace UrGUI.ImGUI
 {
     public class GUIWindow
@@ -250,8 +253,12 @@ namespace UrGUI.ImGUI
                 GUI.enabled = false;
 
             // Main window
-            if (_mainSkin != null)
-                GUI.skin = _mainSkin;
+            // load main bundled skin
+            if (_mainSkin == null) 
+                LoadSkinFromAssetBundle(Assembly.GetExecutingAssembly().GetManifestResourceStream("UrGUI.Skins.main"), "main");
+            else
+                LoadSkin(_mainSkin);
+            
             GUI.Box(new Rect(_x, _y, _width, _height), "");
 
             // window's title
@@ -380,6 +387,11 @@ namespace UrGUI.ImGUI
             }
         }
 
+        /// <summary>
+        /// Loads skin
+        /// </summary>
+        /// <param name="mainSkin">main skin for whole GUIWindow</param>
+        /// <returns>true if successful</returns>
         public bool LoadSkin(GUISkin mainSkin)
         {
             if (mainSkin == null) return false;
@@ -388,6 +400,12 @@ namespace UrGUI.ImGUI
             return true;
         }
 
+        /// <summary>
+        /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
+        /// </summary>
+        /// <param name="absolutePathAssetBundle">absolute path to asset bundle</param>
+        /// <param name="mainSkinName">bundled name of GUISkin file</param>
+        /// <returns>true if successful</returns>
         public bool LoadSkinFromAssetBundle(string absolutePathAssetBundle, string mainSkinName)
         {
             var asset = AssetBundle.LoadFromFile(absolutePathAssetBundle);
@@ -399,6 +417,23 @@ namespace UrGUI.ImGUI
             return true;
         }
 
+        /// <summary>
+        /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
+        /// </summary>
+        /// <param name="assetBundle">stream of assetbundle</param>
+        /// <param name="mainSkinName">bundled name of GUISkin file</param>
+        /// <returns>true if successful</returns>
+        public bool LoadSkinFromAssetBundle(System.IO.Stream assetBundle, string mainSkinName)
+        {
+            var asset = AssetBundle.LoadFromStream(assetBundle);
+
+            if (asset == null) return false;
+
+            _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
+            
+            return true;
+        }
+        
         #region CONTROLS
 
         //#################
