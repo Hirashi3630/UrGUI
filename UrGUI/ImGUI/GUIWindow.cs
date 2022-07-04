@@ -11,13 +11,52 @@ namespace UrGUI.ImGUI
 {
     public class GUIWindow
     {
-        protected GUIWindow()
+        #region Initialization
+        private protected GUIWindow()
         {
         }
 
+        private static bool _isIniDone = false;
+        private static void Ini()
+        {
+            if (_isIniDone) return;
+            _isIniDone = true;
+            
+            LoadDefaultSkin();
+        }
+        
+        private static void LoadDefaultSkin()
+        {
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
+            byte[] ba = default;
+            int nOfB = 0;
+            using (Stream resFilestream = a.GetManifestResourceStream("UrGUI.Skins.main"))
+            {
+                if (resFilestream == null)
+                {
+                    Debug.LogWarning("Couldn't load default skin! Filestream is null");
+                    return;
+                }
+                
+                ba = new byte[resFilestream.Length];
+                nOfB = resFilestream.Read(ba, 0, ba.Length);
+            }
+            
+            if (ba.Length != nOfB)
+                Debug.LogError("Stream didn't ready all of available bytes!");
+
+            
+            var asset = AssetBundle.LoadFromMemory(ba);
+
+            _defaultSkin = asset.LoadAsset<GUISkin>("main");
+        }
+        #endregion
+        
         public static readonly GUIStyle WhiteButtonGUIStyle = new GUIStyle
             { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
 
+        private static GUISkin _defaultSkin = null; 
+        
         public static float DynamicWindowsCurrentX = 0;
         public static readonly float DynamicWindowsMarginX = 10;
 
@@ -72,7 +111,6 @@ namespace UrGUI.ImGUI
             return Begin(windowTitle, x, y, width, height, margin, controlHeight, controlSpace, isEnabled, isDraggable, dynamicHeight);
         }
 
-
         /// <summary>
         /// Create a GUIWindow
         /// </summary>
@@ -92,6 +130,8 @@ namespace UrGUI.ImGUI
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
             bool isDraggable = true, bool dynamicHeight = false)
         {
+            Ini();
+            
             GUIWindow b = new GUIWindow
             {
                 IsEnabled = isEnabled,
@@ -108,97 +148,9 @@ namespace UrGUI.ImGUI
                 _controls = new List<WControl>()
             };
 
+            b._mainSkin = _defaultSkin;
+
             return b;
-        }
-
-        /// <summary>
-        /// Add control manually (to do it dynamically use methods such as: Label(); Button(); Space()...)
-        /// </summary>
-        /// <param name="c"></param>
-        public void Add(WControl c)
-        {
-            _controls.Add(c);
-
-            // check if control control is suppose to be on the same line
-            if (_nextLineRatios.Count > 0)
-            {
-                c.SameLineRatio = _nextLineRatios[0];
-                _nextLineRatios.RemoveAt(0);
-            }
-            
-            // calculate dynamic height
-            if (_dynamicHeight)
-            {
-                var titleHeight = 25f + _margin;
-                var controlHeight= (_controlHeight + _controlSpace);
-                var nLines = 0;
-                var sameLineThreshold = 1f;
-
-                // no idea how to simplify this foreach, but it works
-                foreach (var i in _controls)
-                {
-                    // handle SameLine
-                    if (i.SameLineRatio.Equals(1) ||
-                        sameLineThreshold < 0.05f)
-                    {
-                        nLines++;
-                        sameLineThreshold = 1; // reset threshold
-                    }
-                    else
-                    {
-                        sameLineThreshold -= i.SameLineRatio;
-                        if (sameLineThreshold < 0.05f)
-                            nLines++;
-                    }
-
-                }
-                
-                _height = titleHeight + controlHeight * nLines;
-            }
-        }
-
-        /// <summary>
-        /// Put 2+ controls next to each other (-1 == not included)
-        /// functions on ratio points (15,5) == 3:1
-        /// </summary>
-        /// <param name="ratio1">(R) ratio of first control</param>
-        /// <param name="ratio2">(R)ratio of second control</param>
-        /// <param name="ratio3">ratio of third control</param>
-        /// <param name="ratio4">ratio of fourth control</param>
-        /// <param name="ratio5">ratio of fifth control</param>
-        /// <returns>true if successful</returns>
-        public bool SameLine(int ratio1 = 1, int ratio2 = 1, int ratio3 = -1, int ratio4 = -1, int ratio5 = -1)
-        {
-            if (_nextLineRatios.Count > 0) return false;
-            if (ratio1 <= 0 || ratio2 <= 0) return false;
-
-            // put all ratios in one list
-            List<int> ratios = new List<int>() { ratio1, ratio2 };
-            if (ratio3 > 0)
-            {
-                ratios.Add(ratio3);
-                if (ratio4 > 0)
-                {
-                    ratios.Add(ratio4);
-                    if (ratio5 > 0)
-                        ratios.Add(ratio5);
-                }
-            }
-
-            // normalize ratios
-            int lowest = ratios.Min();
-            List<float> normalizedRatios = new List<float>();
-            foreach (var r in ratios)
-                normalizedRatios.Add(r / (float)lowest);
-
-            // calculate 
-            float nOfNormalized = normalizedRatios.Sum();
-            normalizedRatios.Clear();
-            foreach (var r in ratios)
-                normalizedRatios.Add(r / nOfNormalized);
-
-            _nextLineRatios = normalizedRatios;
-            return true;
         }
 
         /// <summary>
@@ -208,7 +160,13 @@ namespace UrGUI.ImGUI
         {
             // check if this window is enabled
             if (!IsEnabled) return;
+            
+            // check if ini finished
+            if (!_isIniDone) return;
 
+            // load skin
+            GUI.skin = _mainSkin;
+            
             // disable if it's required
             if (AllWindowsDisabled) GUI.enabled = false;
 
@@ -253,12 +211,6 @@ namespace UrGUI.ImGUI
                 GUI.enabled = false;
 
             // Main window
-            // load main bundled skin
-            if (_mainSkin == null) 
-                LoadSkinFromAssetBundle(Assembly.GetExecutingAssembly().GetManifestResourceStream("UrGUI.Skins.main"), "main");
-            else
-                LoadSkin(_mainSkin);
-            
             GUI.Box(new Rect(_x, _y, _width, _height), "");
 
             // window's title
@@ -272,7 +224,6 @@ namespace UrGUI.ImGUI
             foreach (var c in _controls)
                 c.Draw(NextControlRect(c.SameLineRatio));
             
-
             // reset GUI enabled
             GUI.enabled = true;
 
@@ -284,31 +235,8 @@ namespace UrGUI.ImGUI
                     ActiveOptionMenu();
         }
 
-        private Rect NextControlRect(float sameLineRatio)
-        {
-            var fullControlWidth = _width - (_margin * 2);
-            Rect r = new Rect(_x + _margin + _sameLineOffset, _nextControlY, fullControlWidth, _controlHeight);
-            
-            if (sameLineRatio.Equals(1)) 
-                _nextControlY += _controlHeight + _controlSpace;
-            
-            // handle same line
-            else 
-            {
-                r.width *= sameLineRatio;
-                _sameLineOffset += r.width;
-                
-                // reset if it's last control
-                if (_sameLineOffset.Equals(fullControlWidth))
-                {
-                    _nextControlY += _controlHeight + _controlSpace; // offset Y for next control
-                    _sameLineOffset = 0;
-                }
-            }
-
-            return r;
-        }
-
+        #region Config
+        
         /// <summary>
         /// Save a configuration of GUIWindow that can be later loaded
         /// </summary>
@@ -387,6 +315,9 @@ namespace UrGUI.ImGUI
             }
         }
 
+        #endregion
+        
+        #region Skinning
         /// <summary>
         /// Loads skin
         /// </summary>
@@ -434,8 +365,141 @@ namespace UrGUI.ImGUI
             return true;
         }
         
+        /// <summary>
+        /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
+        /// </summary>
+        /// <param name="assetBundle">bytes of assetbundle</param>
+        /// <param name="mainSkinName">bundled name of GUISkin file</param>
+        /// <returns>true if successful</returns>
+        public bool LoadSkinFromAssetBundle(byte[] assetBundle, string mainSkinName)
+        {
+            var asset = AssetBundle.LoadFromMemory(assetBundle);
+
+            if (asset == null) return false;
+
+            _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
+            
+            return true;
+        }
+        #endregion
+        
         #region CONTROLS
 
+        private Rect NextControlRect(float sameLineRatio)
+        {
+            var fullControlWidth = _width - (_margin * 2);
+            Rect r = new Rect(_x + _margin + _sameLineOffset, _nextControlY, fullControlWidth, _controlHeight);
+            
+            if (sameLineRatio.Equals(1)) 
+                _nextControlY += _controlHeight + _controlSpace;
+            
+            // handle same line
+            else 
+            {
+                r.width *= sameLineRatio;
+                _sameLineOffset += r.width;
+                
+                // reset if it's last control
+                if (_sameLineOffset.Equals(fullControlWidth))
+                {
+                    _nextControlY += _controlHeight + _controlSpace; // offset Y for next control
+                    _sameLineOffset = 0;
+                }
+            }
+
+            return r;
+        }
+        
+        /// <summary>
+        /// Add control manually (to do it dynamically use methods such as: Label(); Button(); Space()...)
+        /// </summary>
+        /// <param name="c"></param>
+        public void Add(WControl c)
+        {
+            _controls.Add(c);
+
+            // check if control control is suppose to be on the same line
+            if (_nextLineRatios.Count > 0)
+            {
+                c.SameLineRatio = _nextLineRatios[0];
+                _nextLineRatios.RemoveAt(0);
+            }
+            
+            // calculate dynamic height
+            if (_dynamicHeight)
+            {
+                var titleHeight = 25f + _margin;
+                var controlHeight= (_controlHeight + _controlSpace);
+                var nLines = 0;
+                var sameLineThreshold = 1f;
+
+                // no idea how to simplify this foreach, but it works
+                foreach (var i in _controls)
+                {
+                    // handle SameLine
+                    if (i.SameLineRatio.Equals(1) ||
+                        sameLineThreshold < 0.05f)
+                    {
+                        nLines++;
+                        sameLineThreshold = 1; // reset threshold
+                    }
+                    else
+                    {
+                        sameLineThreshold -= i.SameLineRatio;
+                        if (sameLineThreshold < 0.05f)
+                            nLines++;
+                    }
+
+                }
+                
+                _height = titleHeight + (controlHeight * nLines);
+            }
+        }
+        
+        /// <summary>
+        /// Put 2+ controls next to each other (-1 == not included)
+        /// functions on ratio points (15,5) == 3:1
+        /// </summary>
+        /// <param name="ratio1">(R) ratio of first control</param>
+        /// <param name="ratio2">(R)ratio of second control</param>
+        /// <param name="ratio3">ratio of third control</param>
+        /// <param name="ratio4">ratio of fourth control</param>
+        /// <param name="ratio5">ratio of fifth control</param>
+        /// <returns>true if successful</returns>
+        public bool SameLine(int ratio1 = 1, int ratio2 = 1, int ratio3 = -1, int ratio4 = -1, int ratio5 = -1)
+        {
+            if (_nextLineRatios.Count > 0) return false;
+            if (ratio1 <= 0 || ratio2 <= 0) return false;
+
+            // put all ratios in one list
+            List<int> ratios = new List<int>() { ratio1, ratio2 };
+            if (ratio3 > 0)
+            {
+                ratios.Add(ratio3);
+                if (ratio4 > 0)
+                {
+                    ratios.Add(ratio4);
+                    if (ratio5 > 0)
+                        ratios.Add(ratio5);
+                }
+            }
+
+            // normalize ratios
+            int lowest = ratios.Min();
+            List<float> normalizedRatios = new List<float>();
+            foreach (var r in ratios)
+                normalizedRatios.Add(r / (float)lowest);
+
+            // calculate 
+            float nOfNormalized = normalizedRatios.Sum();
+            normalizedRatios.Clear();
+            foreach (var r in ratios)
+                normalizedRatios.Add(r / nOfNormalized);
+
+            _nextLineRatios = normalizedRatios;
+            return true;
+        }
+        
         //#################
         // ### CONTROLS ###
         // ################
