@@ -378,8 +378,9 @@ namespace UrGUI.ImGUI
             {
                 float sliderWidth = 200;
                 float sliderHeight = 22;
-                Color newValue = GUIControl.ColorPicker(new Vector2(_rect.x + _rect.width - sliderWidth, _rect.y + _rect.height), Value,
-                    false, sliderWidth, sliderHeight);
+                Color newValue = GUIControl.ColorPicker(
+                    new Vector2(_rect.x + _rect.width - sliderWidth, _rect.y + _rect.height),
+                    Value, true, sliderWidth, sliderHeight);
 
                 // handle event
                 if (newValue != Value)
@@ -419,7 +420,7 @@ namespace UrGUI.ImGUI
                         GUIWindow.ActiveOptionMenu = null;
                 }
             }
-
+            
             private bool _isDropDownOpen = false;
             private Vector2 _scrollPos;
             private Rect _rect;
@@ -427,7 +428,7 @@ namespace UrGUI.ImGUI
             private static GUIStyle _dropDownOptionGUIStyle = null; //= GUI.skin.label;
 
             internal WDropDown(System.Action<int> onValueChanged, int value, Dictionary<int, string> valuesList,
-                string displayedString)
+                string displayedString) 
                 : base(displayedString)
             {
                 this.OnValueChanged = onValueChanged;
@@ -440,7 +441,7 @@ namespace UrGUI.ImGUI
                 // init
                 if (_dropDownOptionGUIStyle == null)
                 {
-                    _dropDownOptionGUIStyle = GUI.skin.label;
+                    _dropDownOptionGUIStyle  =  new GUIStyle(GUI.skin.label);
                     _dropDownOptionGUIStyle.hover.textColor = Color.gray;
                     _dropDownOptionGUIStyle.onHover.textColor = Color.gray;
                 }
@@ -468,7 +469,7 @@ namespace UrGUI.ImGUI
             internal void DrawDropDown()
             {
                 var newValue = GUIControl.DropDown(new Vector2(_selectedRect.x, _selectedRect.y + _selectedRect.height),
-                    ValuesList, _scrollPos, out _scrollPos, out bool isOpen, _dropDownOptionGUIStyle, false, _selectedRect.width);
+                    ValuesList, _scrollPos, out _scrollPos, out bool isOpen, _dropDownOptionGUIStyle, true, _selectedRect.width);
 
                 // handle event
                 if (newValue >= 0 & newValue != Value)

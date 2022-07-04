@@ -81,14 +81,14 @@ namespace UrGUI.ImGUI.Utils
         /// <summary>RGBA Color Picker dialog using LabelSlider</summary>
         /// <param name="leftTopCorner">Position of left top corner</param>
         /// <param name="value">The value the color picker shows</param>
-        /// <param name="mainBoxStyle">Style of main box; if null = drawing black colored texture instead of box</param>
+        /// <param name="mainBoxColoredTexture">if true, drawing black colored texture instead of box</param>
         /// <param name="sliderWidth">Width of individual sliders</param>
         /// <param name="sliderHeight">Height of individual sliders</param>
         /// <param name="offsetY">Pixel offset between sliders</param>
         /// <param name="margin">Pixel offset from each side</param>
         /// <returns></returns>
         public static Color ColorPicker(Vector2 leftTopCorner, Color value,
-            bool mainboxColoredTexture = false, float sliderWidth = 200f, float sliderHeight = 22f, float offsetY = 5f, float margin = 5f)
+            bool mainBoxColoredTexture = false, float sliderWidth = 200f, float sliderHeight = 22f, float offsetY = 5f, float margin = 5f)
         {
             // calculate width of label
             float labelWidth = GUIFormatting.GetContentStringSize("X: ").x;
@@ -101,8 +101,8 @@ namespace UrGUI.ImGUI.Utils
                 labelWidth + sliderWidth, // width
                 (sliderHeight * 4) + (offsetY * 3f)); // height
             // draw main box
-            if (mainboxColoredTexture)
-                ColoredBox(mainRect, Color.gray);
+            if (mainBoxColoredTexture)
+                ColoredBox(mainRect, Color.black);
             else
                 GUI.Box(mainRect, "");
 
@@ -127,25 +127,26 @@ namespace UrGUI.ImGUI.Utils
         /// <param name="scrollPosNew">new scroll position of scroll view (x axis is ignored)</param>
         /// <param name="isOpen">false = user selected option and want's to hide drop down</param>
         /// <param name="optionGUIStyle">GUIStyle of options (recommended GUI.skin.label)</param>
-        /// <param name="mainboxColoredTexture">If main box should be replaced with colored texture</param>
+        /// <param name="mainBoxColoredTexture">If main box should be replaced with colored texture</param>
         /// <param name="width">Width of whole dialog</param>
         /// <param name="optionCountShown">How many of options should be displayed without slider</param>
         /// <param name="optionHeight">Height of individual options</param>
         /// <returns></returns>
         public static int DropDown(Vector2 leftTopCorner, Dictionary<int, string> list, Vector2 scrollPos, out Vector2 scrollPosNew, out bool isOpen,
-           GUIStyle optionGUIStyle, bool mainboxColoredTexture = false, float width = 0, int optionCountShown = 4, float optionHeight = 22)
+           GUIStyle optionGUIStyle, bool mainBoxColoredTexture = false, float width = 0, int optionCountShown = 4, float optionHeight = 22)
         {
+            int margin = 4;
+            
             // init
             int newValue = -1;
             isOpen = true;
-
             // main box
             Rect mainRect = new Rect(leftTopCorner.x, leftTopCorner.y, width + 15f, optionHeight * optionCountShown); // 15 is pixel width of scrollbar
 
-            if (mainboxColoredTexture)
-                ColoredBox(mainRect, Color.gray);
+            if (mainBoxColoredTexture)
+                ColoredBox(mainRect, Color.black);
             else
-                GUI.Box(mainRect, "");
+                GUI.Box(mainRect, string.Empty);
 
             // inside
             GUI.BeginGroup(mainRect);
@@ -156,7 +157,8 @@ namespace UrGUI.ImGUI.Utils
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (GUI.Button(new Rect(0, i * optionHeight, mainRect.width - 15, optionHeight), list[i], optionGUIStyle)) // 15 is width of scrollbar
+                if (GUI.Button(new Rect(margin, i * optionHeight, mainRect.width - margin - 15, optionHeight),
+                        list[i], optionGUIStyle)) // 15 is width of scrollbar
                 {
                     newValue = i;
                     isOpen = false;

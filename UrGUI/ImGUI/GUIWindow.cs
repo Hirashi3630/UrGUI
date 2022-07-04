@@ -37,7 +37,6 @@ namespace UrGUI.ImGUI
         private List<WControl> _controls;
 
         private GUISkin _mainSkin = null;
-        private GUISkin _titleSkin = null;
 
         /// <summary>
         /// Create a GUIWindow with dynamic position and size
@@ -256,8 +255,6 @@ namespace UrGUI.ImGUI
             GUI.Box(new Rect(_x, _y, _width, _height), "");
 
             // window's title
-            if (_titleSkin != null)
-                GUI.skin = _titleSkin;
             GUI.Box(new Rect(_x, _y, _width, 25f), _windowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
@@ -383,23 +380,22 @@ namespace UrGUI.ImGUI
             }
         }
 
-        public bool LoadSkin(GUISkin mainSkin, GUISkin titleSkin)
+        public bool LoadSkin(GUISkin mainSkin)
         {
-            if (mainSkin == null || titleSkin == null) return false;
+            if (mainSkin == null) return false;
             this._mainSkin = mainSkin;
-            this._titleSkin = titleSkin;
 
             return true;
         }
 
-        public bool LoadSkinFromAssetBundle(string absolutePathAssetBundle, string mainSkinName, string titleSkinName)
+        public bool LoadSkinFromAssetBundle(string absolutePathAssetBundle, string mainSkinName)
         {
             var asset = AssetBundle.LoadFromFile(absolutePathAssetBundle);
 
             if (asset == null) return false;
 
             _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
-            _titleSkin = asset.LoadAsset<GUISkin>(titleSkinName);
+            
             return true;
         }
 
