@@ -91,7 +91,12 @@ namespace UrGUI.ImGUI
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUI.Toggle(r, Value, DisplayedString);
+                // var newValue = GUI.Toggle(r, Value, DisplayedString);
+                GUI.Label(r, DisplayedString);
+                int switchWidth = 100;
+                var rToggle = new Rect(r.x + r.width - switchWidth, r.y, switchWidth, r.height);
+                var newValue = GUI.Toggle(rToggle, Value, string.Empty);
+                    
                 if (newValue != Value)
                     OnValueChanged(newValue);
                 Value = newValue;
