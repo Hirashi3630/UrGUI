@@ -172,6 +172,11 @@ namespace UrGUI.GUIWindow.Utils
             return newValue;
         }
 
+        /// <summary>
+        /// Draw colored box
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="color"></param>
         public static void ColoredBox(Rect r, Color color)
         {
             var oldColor = GUI.color;

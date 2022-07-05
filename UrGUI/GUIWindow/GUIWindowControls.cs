@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UrGUI.GUIWindow.Utils;
 using UrGUI.Utils;
@@ -493,6 +494,32 @@ namespace UrGUI.GUIWindow
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
                 Value = ini.ReadValue(sectionName, keyBaseName + "value", Value);
+            }
+        }
+
+        internal class WSeparator : WControl
+        {
+            private Color _lineColor;
+            private float _lineThickness;
+            
+            public WSeparator(Color lineColor, float lineThickness)
+                : base(String.Empty)
+            {
+                _lineColor = lineColor;
+                _lineThickness = lineThickness;
+            }
+
+            internal override void Draw(Rect r)
+            {
+                var clr = _lineColor;
+
+                // change alpha if gui is disabled
+                if (!GUI.enabled) clr = _lineColor * new Color(1, 1, 1, .5f);//new Color(_lineColor.r, _lineColor.g, _lineColor.b, _lineColor.a * .5f);
+                
+                // var rLine = new Rect(r.x, r.y, r.width, _lineThickness); // up
+                var rLine = new Rect(r.x, r.y + (r.height / 2f) - (_lineThickness / 2f), r.width, _lineThickness); // middle
+
+                GUIControl.ColoredBox(rLine, clr);
             }
         }
     }

@@ -21,12 +21,13 @@
 
 ## Getting Started
 
-1. Get built assembly from [Release page](https://github.com/Hirashi3630/UrGUI/releases) _(binary doesn't contain Unity dlls, use game's or [editor's](https://docs.unity3d.com/Manual/UsingDLL.html) or [here](https://github.com/Hirashi3630/UrGUI/tree/main/Assemblies/))_
-2. Download source code and build it yourself
+1. Get `UrGUI.dll`
+   - Download built assembly from [Release page](https://github.com/Hirashi3630/UrGUI/releases)
+   - Download source code and build it yourself
 
 ### MelonLoader
 
-3. put `UrGUI.dll` in `/UserLibs/`
+2. put `UrGUI.dll` in `/UserLibs/`
 
 <br>
 
@@ -178,6 +179,22 @@ private void OnGUI()
 
 <br><br>
 
+### Decorative
+
+<br>
+
+#### Separator
+
+<!--<img src="Assets/Media/separator_showcase.gif?raw=true" alt="separator_showcase">-->
+
+*Horizontal line used to separate controls*
+
+  ```cs
+  window.Separator();
+  ```
+
+<br><br>
+
 #### Space
 
 *same as empty label*
@@ -185,6 +202,8 @@ private void OnGUI()
   ```cs
   window.Space();
   ```
+
+<br>
 
 </blockquote>
 

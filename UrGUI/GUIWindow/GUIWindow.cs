@@ -645,6 +645,19 @@ namespace UrGUI.GUIWindow
             Add(c);
         }
 
+        /// <summary>
+        /// a horizontal line to separate controls
+        /// </summary>
+        /// <param name="lineColor">Color of separator</param>
+        /// <param name="lineThickness">Thinness of separator</param>
+        public void Separator(Color lineColor = default(Color), float lineThickness = 2f)
+        {
+            if (lineColor == default(Color))
+                lineColor = new Color(1, 1, 1, .9f);
+            var c = new GUIWindowControls.WSeparator(lineColor,lineThickness);
+            Add(c);
+        }
+
         #endregion
     }
 }
