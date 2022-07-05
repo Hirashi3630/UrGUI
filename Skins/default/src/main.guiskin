@@ -70,7 +70,7 @@ MonoBehaviour:
     m_Font: {fileID: 0}
     m_FontSize: 0
     m_FontStyle: 0
-    m_Alignment: 1
+    m_Alignment: 7
     m_WordWrap: 0
     m_RichText: 1
     m_TextClipping: 1
