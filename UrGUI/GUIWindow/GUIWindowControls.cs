@@ -20,22 +20,19 @@ namespace UrGUI.GUIWindow
 
         internal class WLabel : WControl
         {
-            public GUIFormatting.AlignType Alignment;
-
             private Rect _rect = new Rect();
 
             internal WLabel(
-                string displayedString, GUIFormatting.AlignType alignment)
+                string displayedString)
                 : base(displayedString)
             {
-                this.Alignment = alignment;
+                
             }
 
             internal override void Draw(Rect r)
             {
                 _rect = r;
-                Vector2 pos = GUIFormatting.AlignControl(Alignment, new Vector2(_rect.x, _rect.y),
-                    GUIFormatting.GetContentStringSize(DisplayedString), new Vector2(_rect.width, _rect.height));
+                Vector2 pos = new Vector2(_rect.x, _rect.y);
                 _rect.x = pos.x;
                 _rect.y = pos.y;
 
@@ -46,14 +43,14 @@ namespace UrGUI.GUIWindow
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "alignment", (int)Alignment); // enum to int
+                //ini.WriteValue(sectionName, keyBaseName + "alignment", (int)Alignment); // enum to int
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                Alignment = (GUIFormatting.AlignType)ini.ReadValue(sectionName, keyBaseName + "alignment", (int)Alignment); // int to enum
+                //Alignment = (GUIFormatting.AlignType)ini.ReadValue(sectionName, keyBaseName + "alignment", (int)Alignment); // int to enum
             }
         }
 

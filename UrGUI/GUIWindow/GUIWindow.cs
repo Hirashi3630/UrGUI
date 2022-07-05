@@ -531,10 +531,9 @@ namespace UrGUI.GUIWindow
         /// </summary>
         /// <param name="text">label's text</param>
         /// <param name="alignment">alignment inside of control box</param>
-        public void Label(string text,
-            GUIFormatting.AlignType alignment = GUIFormatting.AlignType.LeftTop)
+        public void Label(string text)
         {
-            var c = new GUIWindowControls.WLabel(text, alignment);
+            var c = new GUIWindowControls.WLabel(text);
             Add(c);
         }
 
