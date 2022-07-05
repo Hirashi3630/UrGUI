@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace UrGUI.ImGUI.Utils
+namespace UrGUI.GUIWindow.Utils
 {
     public static class GUIControl
     {

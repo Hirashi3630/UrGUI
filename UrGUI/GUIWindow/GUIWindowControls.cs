@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UrGUI.ImGUI.Utils;
+using UrGUI.GUIWindow.Utils;
 using UrGUI.Utils;
 
-namespace UrGUI.ImGUI
+namespace UrGUI.GUIWindow
 {
     internal static class GUIWindowControls
     {

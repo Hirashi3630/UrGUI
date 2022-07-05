@@ -60,10 +60,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImGUI\GUIWindow.cs" />
-    <Compile Include="ImGUI\GUIWindowControls.cs" />
-    <Compile Include="ImGUI\Utils\GUIControl.cs" />
-    <Compile Include="ImGUI\Utils\GUIFormatting.cs" />
+    <Compile Include="GUIWindow\GUIWindow.cs" />
+    <Compile Include="GUIWindow\GUIWindowControls.cs" />
+    <Compile Include="GUIWindow\Utils\GUIControl.cs" />
+    <Compile Include="GUIWindow\Utils\GUIFormatting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\INIParser.cs" />
   </ItemGroup>

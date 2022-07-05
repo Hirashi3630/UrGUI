@@ -9,8 +9,13 @@
 
 ----
 
-# WARNING
-This project is in process of being partially rewritten, wiki might not be accurate - use examples if available
+<p align="center">
+  <a href="UrGUI.Examples/CompleteExample.cs" >
+    <img src="Assets/Media/complete_showcase.gif?raw=true" alt="usage-sample1">
+  </a>
+<br>
+  <a href="UrGUI.Examples/">Examples</a>
+</p>
 
 <br>
 
@@ -21,7 +26,7 @@ This project is in process of being partially rewritten, wiki might not be accur
 
 ### MelonLoader
 
- - put `UrGUI.dll` in `/UserLibs/`
+3. put `UrGUI.dll` in `/UserLibs/`
 
 <br>
 
@@ -32,30 +37,32 @@ This project is in process of being partially rewritten, wiki might not be accur
 
 a simple menu with label and button
 
+<img src="Assets/Media/quickstart_showcase.gif?raw=true" alt="usage-sample1">
+
 ```cs
-private GUIWindow window1;
+using UrGUI.GUIWindow;
+
+private GUIWindow window;
 
 private void Start()
 {
-    window1 = GUIWindow.Begin("window1's title");
-    window1.Label("Lorem ipsum");
-    window1.Button("Press me!", () => print("Button has been pressed!"));
+    window = GUIWindow.Begin("Quickstart");
+    window.Label("Lorem ipsum");
+    window.Button("Press me!", () => print("Button has been pressed!"));
 }
 
 private void OnGUI()
 {
-    window1.Draw();
+    window.Draw();
 }
 ```
-
-<img src="Assets/Media/usage-sample1.png?raw=true" alt="usage-sample1">
 
 <details><summary>I want to set my own position and size!</summary><blockquote>
 
 (x, y, width, height)
 
   ```cs
-  window1 = GUIWindow.Begin("window1's title", 10, 10, 200, 400);
+  window = GUIWindow.Begin("Custom size!", startX: 50, 50, 200, 600);
   ```
 
 </blockquote></details>
@@ -66,115 +73,117 @@ private void OnGUI()
 
 <blockquote>
 
-#### Space
-
-*same as empty label*
-
-  ```cs
-  window1.Space();
-  ```
-
-<br><br>
+<br>
 
 #### Label
 
-<img src="Assets/Media/label_showcase1.png?raw=true" alt="label_showcase">
+<img src="Assets/Media/label_showcase.gif?raw=true" alt="label_showcase">
 
 
   ```cs
-  window1.Label("Lorem ipsum");
+  window.Label("Lorem ipsum dolor sit amet");
   ```
 
 <br><br>
 
 #### Button
 
-  <img src="Assets/Media/button_showcase1.png?raw=true" alt="button_showcase">
+  <img src="Assets/Media/button_showcase.gif?raw=true" alt="button_showcase">
 
 
   ```cs
-  window1.Button("Press me!", () => print("Button has been pressed!"));
+ window.Button("Press me!", () => print("Button has been pressed!"));
   ```
 
 <br><br>
 
 #### Slider
 
-  <img src="Assets/Media/slider_showcase1.gif?raw=true" alt="slider_showcase">
+  <img src="Assets/Media/slider_showcase.gif?raw=true" alt="slider_showcase">
 
 
   ```cs
-  window1.Slider("Slider:", (value) => print($"Toggle value is now {value}"), 0.5f, 0f, 1f, true);
+  window.Slider("Slider:", (value) => print($"Slider value is now {value}"), 0.69f, 0f, 1f, true);
   ```
 
 <br><br>
 
 #### Toggle
 
-  <img src="Assets/Media/toggle_showcase1.gif?raw=true" alt="toggle_showcase">
+  <img src="Assets/Media/toggle_showcase.gif?raw=true" alt="toggle_showcase">
 
 
   ```cs
-  window1.Toggle("Toggle me!", (value) => print($"Toggle value is now {value}"));
+  window.Toggle("Is UrGUI best?", (value) => print($"Toggle value is now {value}"), false);
   ```
 
 <br><br>
 
 #### ColorPicker
 
-  <img src="Assets/Media/colorpicker_showcase1.gif?raw=true" alt="colorpicker_showcase">
+  <img src="Assets/Media/colorpicker_showcase.gif?raw=true" alt="colorpicker_showcase">
 
 
   ```cs
-  window1.ColorPicker("Cube clr:", (clr) => Debug.Log($"Color has been changed to {clr}"), Color.red);
+  window.ColorPicker("Cube clr:", (clr) => Debug.Log($"Color has been changed to {clr}"), Color.red);
   ```
 
 <br><br>
 
 #### DropDown
 
-  <img src="Assets/Media/dropdown_showcase1.gif?raw=true" alt="dropdown_showcase">
+  <img src="Assets/Media/dropdown_showcase.gif?raw=true" alt="dropdown_showcase">
 
 
   ```cs
   var selection = new Dictionary<int, string>();
   for (int i = 0; i < 10; i++)
-      selection.Add(i, $"Choice n.{i}");
+      selection.Add(i, $"Option n.{i}");
 
-  window1.DropDown("Selection:", (id) => print($"'{id}'. has been selected!"), 0,  selection); 
+  window.DropDown("Selection:", (id) => print($"'{id}'. has been selected!"), 0,  selection); 
   ```
 
 <br><br>
 
 #### TextField
 
-  <img src="Assets/Media/textfield_showcase1.gif?raw=true" alt="textfield_showcase">
+  <img src="Assets/Media/textfield_showcase.gif?raw=true" alt="textfield_showcase">
 
 
   ```cs
-  window1.TextField("Name:", (value) => Debug.Log($"TextField has been changed to '{value}'"), "Sample Text");
+  window.TextField("Name:", (value) => Debug.Log($"TextField has been changed to '{value}'"), "Sample Text");
   ```
 
 <br><br>
 
 #### IntField
 
-  <img src="Assets/Media/intfield_showcase1.gif?raw=true" alt="intfield_showcase">
+  <img src="Assets/Media/intfield_showcase.gif?raw=true" alt="intfield_showcase">
 
 
   ```cs
-  window1.IntField("X:", (value) => Debug.Log($"IntField has been changed to '{value}'"), 12345);
+  window.IntField("Age:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 1234);
   ```
 
 <br><br>
 
 #### FloatField
 
-  <img src="Assets/Media/floatfield_showcase1.gif?raw=true" alt="floatfield_showcase">
+  <img src="Assets/Media/floatfield_showcase.gif?raw=true" alt="floatfield_showcase">
 
 
   ```cs
-  window1.FloatField("X:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 12.34f, 20);
+  window.FloatField("X:", (value) => Debug.Log($"FloatField has been changed to '{value}'"), 12.34f);
+  ```
+
+<br><br>
+
+#### Space
+
+*same as empty label*
+
+  ```cs
+  window.Space();
   ```
 
 </blockquote>
@@ -191,3 +200,6 @@ Third-party Libraries used as Source Code and/or bundled in Binary Form:
 
 This Repository is not sponsored by, affiliated with or endorsed by Unity Technologies or its affiliates.
 "Unity" is a trademark or a registered trademark of Unity Technologies or its affiliates in the U.S. and elsewhere.
+
+Used softwares
+ - [ScreenToGif](https://github.com/NickeManarin/ScreenToGif) to create these amazing gifs

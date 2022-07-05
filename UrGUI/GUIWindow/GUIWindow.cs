@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UrGUI.ImGUI.Utils;
+using UrGUI.GUIWindow.Utils;
 using UrGUI.Utils;
 
 using System.Reflection;
 using System.IO;
 
-namespace UrGUI.ImGUI
+namespace UrGUI.GUIWindow
 {
     public class GUIWindow
     {
