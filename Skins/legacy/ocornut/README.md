@@ -1,5 +1,5 @@
 # WARNING
-this skin does not longer work.. I lost original `.guiskin` file
+### this skin does NOT work with `v0.9.0+`
 
 <br><br>
 
@@ -11,7 +11,7 @@ All credits for the design to them (assets made by me)
 
 GUIWindowExample 1         |  ColorPicker & DropDown
 :-------------------------:|:-------------------------:
-<img src="../../Assets/Skins/Media/ocornut-guiwindowexample1.png?raw=true" alt="ocornut-guiwindowexample1">  |  <img src="../../Assets/Skins/Media/ocornut-guiwindowexample1_colorpicker.png?raw=true" alt="ocornut-guiwindowexample1_colorpicker"><br><img src="../../Assets/Skins/Media/ocornut-guiwindowexample1_dropdown.png?raw=true" alt="ocornut-guiwindowexample1_dropdown">
+<img src="../../../Assets/Skins/legacy/ocornut-guiwindowexample1.png?raw=true" alt="ocornut-guiwindowexample1">  |  <img src="../../../Assets/Skins/legacy/ocornut-guiwindowexample1_colorpicker.png?raw=true" alt="ocornut-guiwindowexample1_colorpicker"><br><img src="../../../Assets/Skins/legacy/ocornut-guiwindowexample1_dropdown.png?raw=true" alt="ocornut-guiwindowexample1_dropdown">
 
 # Usage
 

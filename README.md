@@ -3,9 +3,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![GitHub issues](https://img.shields.io/github/issues/Hirashi3630/UrGUI) [![Workflow Badge](https://github.com/Hirashi3630/UrGUI/actions/workflows/ReleaseBuild.yml/badge.svg)](https://github.com/Hirashi3630/UrGUI/actions/workflows/ReleaseBuild.yml) [![CodeFactor](https://www.codefactor.io/repository/github/hirashi3630/urgui/badge/main)](https://www.codefactor.io/repository/github/hirashi3630/urgui/overview/main)
 
-> UrGUI: easy to use extension for Unity IMGUI system
+> UrGUI: easy to use library to create simple UI/GUI in Unity using bult-in IMGUI system
 > <br><br>
-> The main focus of this project is to create an easy-to-use extension library for Unity IMGUI, primarily used for modding and debugging purposes.
+> The main focus of this project is to create an easy-to-use library for Unity, primarily used for modding and debugging purposes. By using Unity's built-in IMGUI system you can be sure this library will work with almost any version of Unity
 
 ----
 

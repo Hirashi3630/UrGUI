@@ -1,12 +1,12 @@
 # default skin
 
-As the name indicates, this skin is shipped with UrGUI as a default skin
+### As the name indicates, this skin is shipped with UrGUI as a default skin
 
 <br>
 
 GUIWindowExample 1         |  ColorPicker & DropDown
 :-------------------------:|:-------------------------:
-<img src="../../Assets/Skins/Media/default-guiwindowexample1.png?raw=true" alt="default-guiwindowexample1">  |  <img src="../../Assets/Skins/Media/default-guiwindowexample1_colorpicker.png?raw=true" alt="default-guiwindowexample1_colorpicker"><br><img src="../../Assets/Skins/Media/default-guiwindowexample1_dropdown.png?raw=true" alt="default-guiwindowexample1_dropdown">
+<img src="../../Assets/Media/complete_showcase.gif?raw=true" alt="default-guiwindowexample1">  |  <img src="../../Assets/Media/colorpicker_showcase.gif?raw=true" alt="default-guiwindowexample1_colorpicker"><br><img src="/../../Assets/Media/dropdown_showcase.gif?raw=true" alt="default-guiwindowexample1_dropdown">
 
 # Usage
 
