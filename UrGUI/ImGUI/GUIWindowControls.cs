@@ -423,7 +423,7 @@ namespace UrGUI.ImGUI
             
             private bool _isDropDownOpen = false;
             private Vector2 _scrollPos;
-            private Rect _rect;
+            // private Rect _rect;
             private Rect _selectedRect;
             private static GUIStyle _dropDownOptionGUIStyle = null; //= GUI.skin.label;
 
@@ -441,28 +441,31 @@ namespace UrGUI.ImGUI
                 // init
                 if (_dropDownOptionGUIStyle == null)
                 {
-                    _dropDownOptionGUIStyle  =  new GUIStyle(GUI.skin.label);
+                    _dropDownOptionGUIStyle = new GUIStyle(GUI.skin.label);
                     _dropDownOptionGUIStyle.hover.textColor = Color.gray;
                     _dropDownOptionGUIStyle.onHover.textColor = Color.gray;
                 }
 
                 // calc all rects
-                _rect = r;
-                Rect labelRect = _rect;
-                labelRect.width /= 3f;
-                _selectedRect = _rect;
-                _selectedRect.x += labelRect.width;
-                _selectedRect.width = labelRect.width * 2f;
-                Rect selectedLabelRect = _selectedRect;
-                selectedLabelRect.x += 5f; // offset
-                selectedLabelRect.width -= 5f; // offset
+                // var margin = 5f;
+                // var selectedText = ValuesList[Value];
+                // var selectedTextSize = GUIFormatting.GetContentStringSize(selectedText);
+                // var selectedButtonWidth = selectedTextSize.x + (margin * 2);
+                // _selectedRect = new Rect(r.width - selectedButtonWidth, r.y, selectedButtonWidth, r.height);
+                // var labelRect = new Rect(r.x, r.y, r.width - _selectedRect.width, r.height);   
 
+                var offset = 5f;
+                
+                var selectedText = ValuesList[Value];
+                Rect labelRect = new Rect(r.x, r.y, r.width *.5f, r.height);
+                _selectedRect = new Rect(r.x + labelRect.width + offset, r.y, r.width - labelRect.width - offset, r.height);
+                
                 // draw opened selection list
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
                 GUI.Label(labelRect, DisplayedString);
-                if (GUI.Button(_selectedRect, string.Empty))
+                if (GUI.Button(_selectedRect, selectedText))
                     IsDropDownOpen = !IsDropDownOpen;
-                GUI.Label(selectedLabelRect, ValuesList[Value]);
+                //GUI.Label(selectedLabelRect, selectedText);
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
             }
 
