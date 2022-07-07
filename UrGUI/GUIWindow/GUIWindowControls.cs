@@ -3,22 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UrGUI.GUIWindow.Utils;
 using UrGUI.Utils;
+using static UrGUI.Utils.Logger;
 
 namespace UrGUI.GUIWindow
 {
     internal static class GUIWindowControls
     {
-        internal class WSpace : WControl
-        {
-            internal WSpace() : base(string.Empty) { }
-
-            internal override void Draw(Rect r) { }
-
-            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini) { }
-
-            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini) { }
-        }
-
         internal class WLabel : WControl
         {
             private Rect _rect = new Rect();
@@ -27,7 +17,10 @@ namespace UrGUI.GUIWindow
                 string displayedString)
                 : base(displayedString)
             {
-                
+                if (displayedString == null ||
+                    string.IsNullOrEmpty(displayedString) ||
+                    string.IsNullOrWhiteSpace(displayedString))
+                    war("Label is null or empty! Are you sure you don't want to use Space control instead?");
             }
 
             internal override void Draw(Rect r)
@@ -79,6 +72,8 @@ namespace UrGUI.GUIWindow
             
             public bool Value;
 
+            private GUIStyle _toggleStyle = null;
+
             internal WToggle(System.Action<bool> onValueChanged, bool value,
                 string displayedString)
                 : base(displayedString)
@@ -89,12 +84,19 @@ namespace UrGUI.GUIWindow
 
             internal override void Draw(Rect r)
             {
-                // var newValue = GUI.Toggle(r, Value, DisplayedString);
-                GUI.Label(r, DisplayedString);
-                int switchWidth = 100;
-                var rToggle = new Rect(r.x + r.width - switchWidth, r.y, switchWidth, r.height);
-                var newValue = GUI.Toggle(rToggle, Value, string.Empty);
-                    
+                // calculations consider that toggle box is 1:1 ratio (r.height : r.height)
+                bool newValue = Value;
+                Rect rToggle = r;
+                if (_toggleStyle == null)
+                    _toggleStyle = new GUIStyle(GUI.skin.toggle); 
+
+                // change GUIStyle overflow value to draw it on the right side and still trigger LMB
+                // (not the prettiest solution but it works)
+                int overValue = Mathf.RoundToInt(r.width - r.height);
+                _toggleStyle.overflow.left = -overValue;
+                _toggleStyle.overflow.right = overValue;
+                newValue = GUI.Toggle(rToggle, Value, string.Empty, _toggleStyle);
+                
                 if (newValue != Value)
                     OnValueChanged(newValue);
                 Value = newValue;
@@ -141,7 +143,7 @@ namespace UrGUI.GUIWindow
             internal override void Draw(Rect r)
             {
                 var newValue = GUIControl.LabelSlider(r, DisplayedString, Value, _min, _max, _numberIndicator, _numberIndicatorFormat, _labelOnLeft, 5f);
-
+                
                 // handle onChangedValue event 
                 if (!newValue.Equals(Value))
                     OnValueChanged(newValue);
@@ -342,7 +344,8 @@ namespace UrGUI.GUIWindow
                 }
             }
             private bool _isPickerOpen = false;
-            private Rect _rect;
+            private Rect _rect; 
+
             internal WColorPicker(System.Action<Color> onValueChanged, Color clr,
                 string displayedString)
                 : base(displayedString)
@@ -354,21 +357,29 @@ namespace UrGUI.GUIWindow
             internal override void Draw(Rect r)
             {
                 _rect = r;
-                Rect previewButtonRect = _rect;
-                previewButtonRect.width /= 3f;
-                previewButtonRect.x += previewButtonRect.width * 2f;
-                Rect labelRect = _rect;
-                labelRect.width *= 0.66666f;
+                
+                bool drawLabel = !string.IsNullOrEmpty(DisplayedString);
+                Rect labelRect = new Rect(r.x, r.y, r.width * .666f, r.height);
+                Rect previewButtonRect = new Rect(labelRect.x + labelRect.width, r.y, r.width - labelRect.width, r.height);
 
+                if (!drawLabel)
+                    previewButtonRect = new Rect(r.x + 2, r.y, r.width - 2, r.height); // 2 = offset
+                
                 // # COLOR PICKER #
-                // draw preview button
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
-                GUI.Label(labelRect, DisplayedString);
+                
+                // draw label
+                if (drawLabel)
+                    GUI.Label(labelRect, DisplayedString);
+                
+                // draw preview button
                 var oldColor = GUI.color;
                 GUI.color = Value;
                 if (GUI.Button(previewButtonRect, string.Empty, GUIWindow.WhiteButtonGUIStyle))
                     IsPickerOpen = !IsPickerOpen;
+                
                 if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
+                
                 GUI.color = oldColor;
             }
 
@@ -457,10 +468,16 @@ namespace UrGUI.GUIWindow
                 var selectedText = ValuesList[Value];
                 Rect labelRect = new Rect(r.x, r.y, r.width *.5f, r.height);
                 _selectedRect = new Rect(r.x + labelRect.width + offset, r.y, r.width - labelRect.width - offset, r.height);
+
+                if (string.IsNullOrEmpty(DisplayedString))
+                    _selectedRect = r;
                 
                 // draw opened selection list
                 if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
-                GUI.Label(labelRect, DisplayedString);
+                
+                if (!string.IsNullOrEmpty(DisplayedString))
+                    GUI.Label(labelRect, DisplayedString);
+                
                 if (GUI.Button(_selectedRect, selectedText))
                     IsDropDownOpen = !IsDropDownOpen;
                 //GUI.Label(selectedLabelRect, selectedText);
@@ -522,13 +539,24 @@ namespace UrGUI.GUIWindow
                 GUIControl.ColoredBox(rLine, clr);
             }
         }
+        
+        internal class WSpace : WControl
+        {
+            internal WSpace() : base(string.Empty) { }
+
+            internal override void Draw(Rect r) { }
+
+            internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini) { }
+
+            internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini) { }
+        }
     }
     
     public abstract class WControl
     {
         internal float SameLineRatio = 1;
         
-        internal string DisplayedString;
+        internal string DisplayedString = null;
 
         internal WControl(string displayedString)
         {

@@ -393,7 +393,7 @@ namespace UrGUI.GUIWindow
         {
             if (assetBundle == null) return false;
 
-            _mainSkin = assetBundle.LoadAsset<GUISkin>(mainSkinName);
+            LoadSkin(assetBundle.LoadAsset<GUISkin>(mainSkinName));
             
             return true;
         }
