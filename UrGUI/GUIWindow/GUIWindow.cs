@@ -347,50 +347,53 @@ namespace UrGUI.GUIWindow
         /// <summary>
         /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
         /// </summary>
-        /// <param name="absolutePathAssetBundle">absolute path to asset bundle</param>
+        /// <param name="absolutePathAssetBundle">absolute path to AssetBundle</param>
         /// <param name="mainSkinName">bundled name of GUISkin file</param>
         /// <returns>true if successful</returns>
         public bool LoadSkinFromAssetBundle(string absolutePathAssetBundle, string mainSkinName)
         {
             var asset = AssetBundle.LoadFromFile(absolutePathAssetBundle);
 
-            if (asset == null) return false;
-
-            _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
-            
-            return true;
+            return LoadSkinFromAssetBundle(asset, mainSkinName);
         }
 
         /// <summary>
         /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
         /// </summary>
-        /// <param name="assetBundle">stream of assetbundle</param>
+        /// <param name="assetFromStream">stream of AssetBundle</param>
         /// <param name="mainSkinName">bundled name of GUISkin file</param>
         /// <returns>true if successful</returns>
-        public bool LoadSkinFromAssetBundle(System.IO.Stream assetBundle, string mainSkinName)
+        public bool LoadSkinFromAssetBundle(System.IO.Stream assetFromStream, string mainSkinName)
         {
-            var asset = AssetBundle.LoadFromStream(assetBundle);
+            var asset = AssetBundle.LoadFromStream(assetFromStream);
 
-            if (asset == null) return false;
-
-            _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
-            
-            return true;
+            return LoadSkinFromAssetBundle(asset, mainSkinName);
         }
         
         /// <summary>
         /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
         /// </summary>
-        /// <param name="assetBundle">bytes of assetbundle</param>
+        /// <param name="assetFromMemory">bytes of AssetBundle</param>
         /// <param name="mainSkinName">bundled name of GUISkin file</param>
         /// <returns>true if successful</returns>
-        public bool LoadSkinFromAssetBundle(byte[] assetBundle, string mainSkinName)
+        public bool LoadSkinFromAssetBundle(byte[] assetFromMemory, string mainSkinName)
         {
-            var asset = AssetBundle.LoadFromMemory(assetBundle);
+            var asset = AssetBundle.LoadFromMemory(assetFromMemory);
 
-            if (asset == null) return false;
+            return LoadSkinFromAssetBundle(asset, mainSkinName);
+        }
+        
+        /// <summary>
+        /// Loads skin using AssetBundles (<a href="https://github.com/Hirashi3630/UrGUI/tree/main/Skins#creating-own-skin">how to create your own</a>)
+        /// </summary>
+        /// <param name="assetBundle"></param>
+        /// <param name="mainSkinName">bundled name of GUISkin file</param>
+        /// <returns>true if successful</returns>
+        public bool LoadSkinFromAssetBundle(AssetBundle assetBundle, string mainSkinName)
+        {
+            if (assetBundle == null) return false;
 
-            _mainSkin = asset.LoadAsset<GUISkin>(mainSkinName);
+            _mainSkin = assetBundle.LoadAsset<GUISkin>(mainSkinName);
             
             return true;
         }
