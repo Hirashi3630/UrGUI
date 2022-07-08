@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UrGUI.GUIWindow.Utils;
 using UrGUI.Utils;
+using UrGUI.UWindow.Utils;
+using UrGUI.Windows.Utils;
 using static UrGUI.Utils.Logger;
+using static UrGUI.UWindow.UWindowManager;
 
-namespace UrGUI.GUIWindow
+namespace UrGUI.Windows
 {
     internal static class GUIWindowControls
     {
+        
+        
         internal class WLabel : WControl
         {
             private Rect _rect = new Rect();
@@ -336,16 +340,19 @@ namespace UrGUI.GUIWindow
             private bool IsPickerOpen { get => _isPickerOpen; set
                 {
                     _isPickerOpen = value;
-                    GUIWindow.AllWindowsDisabled = value;
+                    AllWindowsDisabled = value;
                     if (value)
-                        GUIWindow.ActiveOptionMenu = DrawPicker;
+                        ActiveOptionMenu = DrawPicker;
                     else
-                        GUIWindow.ActiveOptionMenu = null;
+                        ActiveOptionMenu = null;
                 }
             }
             private bool _isPickerOpen = false;
             private Rect _rect; 
 
+            private readonly GUIStyle _whiteButtonGUIStyle = new GUIStyle
+                { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
+            
             internal WColorPicker(System.Action<Color> onValueChanged, Color clr,
                 string displayedString)
                 : base(displayedString)
@@ -366,7 +373,7 @@ namespace UrGUI.GUIWindow
                     previewButtonRect = new Rect(r.x + 2, r.y, r.width - 2, r.height); // 2 = offset
                 
                 // # COLOR PICKER #
-                if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
+                if (AllWindowsDisabled && IsPickerOpen) GUI.enabled = true;
                 
                 // draw label
                 if (drawLabel)
@@ -375,10 +382,10 @@ namespace UrGUI.GUIWindow
                 // draw preview button
                 var oldColor = GUI.color;
                 GUI.color = Value;
-                if (GUI.Button(previewButtonRect, string.Empty, GUIWindow.WhiteButtonGUIStyle))
+                if (GUI.Button(previewButtonRect, string.Empty, _whiteButtonGUIStyle))
                     IsPickerOpen = !IsPickerOpen;
                 
-                if (GUIWindow.AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
+                if (AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
                 
                 GUI.color = oldColor;
             }
@@ -422,11 +429,11 @@ namespace UrGUI.GUIWindow
                 set
                 {
                     _isDropDownOpen = value;
-                    GUIWindow.AllWindowsDisabled = value;
+                    AllWindowsDisabled = value;
                     if (value)
-                        GUIWindow.ActiveOptionMenu = DrawDropDown;
+                        ActiveOptionMenu = DrawDropDown;
                     else
-                        GUIWindow.ActiveOptionMenu = null;
+                        ActiveOptionMenu = null;
                 }
             }
             
@@ -473,7 +480,7 @@ namespace UrGUI.GUIWindow
                     _selectedRect = r;
                 
                 // draw opened selection list
-                if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
+                if (AllWindowsDisabled && IsDropDownOpen) GUI.enabled = true;
                 
                 if (!string.IsNullOrEmpty(DisplayedString))
                     GUI.Label(labelRect, DisplayedString);
@@ -481,7 +488,7 @@ namespace UrGUI.GUIWindow
                 if (GUI.Button(_selectedRect, selectedText))
                     IsDropDownOpen = !IsDropDownOpen;
                 //GUI.Label(selectedLabelRect, selectedText);
-                if (GUIWindow.AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
+                if (AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
             }
 
             internal void DrawDropDown()

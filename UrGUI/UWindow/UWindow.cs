@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UrGUI.GUIWindow.Utils;
-using UrGUI.Utils;
-
-using System.Reflection;
 using System.IO;
+using UnityEngine;
+using UrGUI.Windows;
+using UrGUI.Utils;
+using static UrGUI.UWindow.UWindowManager;
 
-namespace UrGUI.GUIWindow
+
+namespace UrGUI.UWindow
 {
-    public class GUIWindow
+    public class UWindow
     {
         #region Initialization
-        private protected GUIWindow()
+        private protected UWindow()
         {
         }
 
@@ -52,19 +52,14 @@ namespace UrGUI.GUIWindow
         }
         #endregion
         
-        public static readonly GUIStyle WhiteButtonGUIStyle = new GUIStyle
-            { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
+       
 
         private static GUISkin _defaultSkin = null; 
         
-        public static float DynamicWindowsCurrentX = 0;
-        public static readonly float DynamicWindowsMarginX = 10;
+        
 
-        public static bool AllWindowsDisabled = false;
-        public static bool AnyWindowDragging = false;
-        public static System.Action ActiveOptionMenu = null;
-        public static GUIWindow DialogDrawer = null;
-
+        /// <summary>unique ID</summary>
+        public string WinGuid;
         public bool IsEnabled { get; set; }
 
         public string WindowTitle;
@@ -83,7 +78,7 @@ namespace UrGUI.GUIWindow
         private GUISkin _mainSkin = null;
 
         /// <summary>
-        /// Create a GUIWindow with dynamic position and size
+        /// Create a UWindow with dynamic position and size
         /// </summary>
         /// <param name="windowTitle">Window's title shown in the header</param>
         /// <param name="startWidth">Window's width</param>
@@ -95,26 +90,21 @@ namespace UrGUI.GUIWindow
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <param name="dynamicHeight">If true, startHeight is ignored</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle = "a Title", float startWidth = 200,
+        public static UWindow Begin(string windowTitle = "a Title", float startWidth = 200,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
             bool isDraggable = true, bool dynamicHeight = true)
         {
-            DynamicWindowsCurrentX += DynamicWindowsMarginX;
-
-            // get dynamic X position based on previously created GUIWindows
-            float x = DynamicWindowsCurrentX;
-            float y = DynamicWindowsMarginX;
             // set default size
             float width = startWidth;
-            float height = 400;
+            float height = 400; // this will be calculated after first added control
 
-            DynamicWindowsCurrentX += width + DynamicWindowsMarginX;
+            var pos = GetDynamicWindowPos(width);
 
-            return Begin(windowTitle, x, y, width, height, margin, controlHeight, controlSpace, isEnabled, isDraggable, dynamicHeight);
+            return Begin(windowTitle, pos.x, pos.y, width, height, margin, controlHeight, controlSpace, isEnabled, isDraggable, dynamicHeight);
         }
 
         /// <summary>
-        /// Create a GUIWindow
+        /// Create a UWindow
         /// </summary>
         /// <param name="windowTitle">Window's title shown in the header</param>
         /// <param name="startX">Starting X position ([0;0] is in the top left)</param>
@@ -128,13 +118,13 @@ namespace UrGUI.GUIWindow
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <param name="dynamicHeight">If true, startHeight is ignored</param>
         /// <returns></returns>
-        public static GUIWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
+        public static UWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
             bool isDraggable = true, bool dynamicHeight = false)
         {
             Ini();
             
-            GUIWindow b = new GUIWindow
+            UWindow b = new UWindow
             {
                 IsEnabled = isEnabled,
                 WindowTitle = windowTitle,
@@ -154,13 +144,16 @@ namespace UrGUI.GUIWindow
             b._startX = startX;
             b._startY = startY;
 
+            // register this UWindow to the manager
+            Register(b);
+            
             return b;
         }
 
         /// <summary>
         /// Should be called in UnityEngine.OnGUI() method
         /// </summary>
-        public void Draw()
+        internal void Draw()
         {
             // check if this window is enabled
             if (!IsEnabled) return;
@@ -230,13 +223,6 @@ namespace UrGUI.GUIWindow
             
             // reset GUI enabled
             GUI.enabled = true;
-
-            // draw active option menu
-            if (DialogDrawer == null)
-                DialogDrawer = this;
-            if (DialogDrawer == this)
-                if (ActiveOptionMenu != null)
-                    ActiveOptionMenu();
         }
 
         /// <summary>
@@ -251,7 +237,7 @@ namespace UrGUI.GUIWindow
         #region Config
         
         /// <summary>
-        /// Save a configuration of GUIWindow that can be later loaded
+        /// Save a configuration of UWindow that can be later loaded
         /// </summary>
         /// <param name="absolutePath">Absolute path to .ini file (created if it does not exists)</param>
         /// <returns>true if successful</returns>
@@ -262,8 +248,8 @@ namespace UrGUI.GUIWindow
                 INIParser ini = new INIParser();
                 ini.Open(absolutePath);
 
-                string sectionName = $"GUIWindow.{WindowTitle}";
-                // write all values for GUIWindow
+                string sectionName = $"UWindow.{WindowTitle}";
+                // write all values for UWindow
                 ini.WriteValue(sectionName, "windowTitle", WindowTitle);
                 ini.WriteValue(sectionName, "x", X);
                 ini.WriteValue(sectionName, "y", Y);
@@ -289,7 +275,7 @@ namespace UrGUI.GUIWindow
         }
 
         /// <summary>
-        /// Loads a configuration of GUIWindow and applies it 
+        /// Loads a configuration of UWindow and applies it 
         /// </summary>
         /// <param name="absolutePath">Absolute path to .ini file</param>
         /// <returns>true if successful</returns>
@@ -302,8 +288,8 @@ namespace UrGUI.GUIWindow
                 INIParser ini = new INIParser();
                 ini.Open(absolutePath);
 
-                string sectionName = $"GUIWindow.{WindowTitle}";
-                // read all values for GUIWindow
+                string sectionName = $"UWindow.{WindowTitle}";
+                // read all values for UWindow
                 WindowTitle = ini.ReadValue(sectionName, "windowTitle", WindowTitle);
                 X = ini.ReadValue(sectionName, "x", X);
                 Y = ini.ReadValue(sectionName, "y", Y);
@@ -334,7 +320,7 @@ namespace UrGUI.GUIWindow
         /// <summary>
         /// Loads skin
         /// </summary>
-        /// <param name="mainSkin">main skin for whole GUIWindow</param>
+        /// <param name="mainSkin">main skin for whole UWindow</param>
         /// <returns>true if successful</returns>
         public bool LoadSkin(GUISkin mainSkin)
         {
