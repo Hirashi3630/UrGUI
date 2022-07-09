@@ -52,7 +52,7 @@ namespace UrGUI.UWindow
         {
             if (!IsDrawing) return;
             
-            foreach (var w in Windows)
+            foreach (var w in Windows.ToList())
             {
                 // draw window
                 w.Draw();
@@ -63,12 +63,19 @@ namespace UrGUI.UWindow
                 ActiveOptionMenu();
         }
 
-        public static void BringWindowToFront(string guid)
+        public static void BringUWindowToFront(UWindow win)
         {
-            var win = GetUWinByGuid(guid);
-            Windows.RemoveAll(p => p.WinGuid == guid);
-            Windows.Insert(0, win);
+            // "front" means last to render
+            Windows.Remove(win);
+            Windows.Add(win);
         }
+        
+        // public static void BringUWindowToFront(string guid)
+        // {
+        //     var win = GetUWinByGuid(guid);
+        //     Windows.RemoveAll(p => p.WinGuid == guid);
+        //     Windows.Insert(0, win);
+        // }
 
         private static int GetIndexByGuid(string guid)
         {

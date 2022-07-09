@@ -166,13 +166,18 @@ namespace UrGUI.UWindow
             // disable if it's required
             if (AllWindowsDisabled) GUI.enabled = false;
 
+            // if mouse click anywhere in this window, bring to front
+            var e = Event.current;
+            if (e.type == EventType.MouseDown &&
+                new Rect(X,Y,Width,Height).Contains(e.mousePosition))
+                BringUWindowToFront(this);
+            
             // handle drag
             if (IsDraggable)
             {
                 // mouse drag
                 if (!AnyWindowDragging || _isDragging)
                 {
-                    var e = Event.current;
                     if (e.type == EventType.MouseDown &&
                         new Rect(X, Y, Width, _controlHeight * 1.25f).Contains(e.mousePosition))
                     {
