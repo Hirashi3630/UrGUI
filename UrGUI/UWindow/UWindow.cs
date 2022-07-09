@@ -10,59 +10,36 @@ namespace UrGUI.UWindow
 {
     public class UWindow
     {
-        #region Initialization
         private protected UWindow()
         {
         }
-
-        private static bool _isIniDone = false;
-        private static void Ini()
-        {
-            if (_isIniDone) return;
-            _isIniDone = true;
-            
-            LoadDefaultSkin();
-        }
         
-        private static void LoadDefaultSkin()
-        {
-            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
-            byte[] ba = default;
-            int nOfB = 0;
-            using (Stream resFilestream = a.GetManifestResourceStream("UrGUI.Skins.main"))
-            {
-                if (resFilestream == null)
-                {
-                    Debug.LogWarning("Couldn't load default skin! Filestream is null");
-                    return;
-                }
-                
-                ba = new byte[resFilestream.Length];
-                nOfB = resFilestream.Read(ba, 0, ba.Length);
-            }
-            
-            if (ba.Length != nOfB)
-                Debug.LogError("Stream didn't ready all of available bytes!");
-
-            
-            var asset = AssetBundle.LoadFromMemory(ba);
-
-            _defaultSkin = asset.LoadAsset<GUISkin>("main");
-        }
-        #endregion
-        
-       
-
-        private static GUISkin _defaultSkin = null; 
-        
-        
-
-        /// <summary>unique ID</summary>
+        /// <summary>
+        /// unique UWindow's ID
+        /// </summary>
         public string WinGuid;
-        public bool IsEnabled { get; set; }
+        
+        /// <summary>
+        /// This UWindow's active skin
+        /// </summary>
+        public GUISkin ActiveSkin { get; internal set; } = null;
+        
+        /// <summary>
+        /// Is window being drawn
+        /// </summary>
+        public bool IsDrawing { get; set; }
 
+        /// <summary>
+        /// Window's title
+        /// </summary>
         public string WindowTitle;
+        /// <summary>
+        /// Window's rect
+        /// </summary>
         public float X, Y, Width, Height;
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsDraggable, DynamicHeight;
         
         private float _startX, _startY, _margin, _controlHeight, _controlSpace, _sameLineOffset;
@@ -74,28 +51,26 @@ namespace UrGUI.UWindow
         private float _nextControlY;
         private List<WControl> _controls;
 
-        private GUISkin _mainSkin = null;
 
         /// <summary>
         /// Create a UWindow with dynamic position and size
         /// </summary>
         /// <param name="windowTitle">Window's title shown in the header</param>
         /// <param name="startWidth">Window's width</param>
-        /// <param name="startHeight">Window's height (if dynamicHeight is true startHeight is ignored)</param>
         /// <param name="margin">Margin around individual controls</param>
         /// <param name="controlHeight">Control's height</param>
         /// <param name="controlSpace">Vertical space between controls</param>
         /// <param name="isEnabled"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
-        /// <param name="dynamicHeight">If true, startHeight is ignored</param>
+        /// <param name="dynamicHeight">If true, height is ignored</param>
         /// <returns></returns>
         public static UWindow Begin(string windowTitle = "a Title", float startWidth = 200,
             float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
             bool isDraggable = true, bool dynamicHeight = true)
         {
             // set default size
-            float width = startWidth;
-            float height = 400; // this will be calculated after first added control
+            var width = startWidth;
+            var height = 400; // this will be calculated after first added control
 
             var pos = GetDynamicWindowPos(width);
 
@@ -113,19 +88,17 @@ namespace UrGUI.UWindow
         /// <param name="margin">Margin around individual controls</param>
         /// <param name="controlHeight">Control's height</param>
         /// <param name="controlSpace">Vertical space between controls</param>
-        /// <param name="isEnabled"></param>
+        /// <param name="isDrawing"></param>
         /// <param name="isDraggable">Ability to move control in runtime by dragging it with a mouse by header</param>
         /// <param name="dynamicHeight">If true, startHeight is ignored</param>
         /// <returns></returns>
         public static UWindow Begin(string windowTitle, float startX, float startY, float startWidth, float startHeight,
-            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isEnabled = true,
+            float margin = 10, float controlHeight = 22, float controlSpace = 5, bool isDrawing = true,
             bool isDraggable = true, bool dynamicHeight = false)
         {
-            Ini();
-            
             UWindow b = new UWindow
             {
-                IsEnabled = isEnabled,
+                IsDrawing = isDrawing,
                 WindowTitle = windowTitle,
                 X = startX,
                 Y = startY,
@@ -139,7 +112,6 @@ namespace UrGUI.UWindow
                 _controls = new List<WControl>()
             };
 
-            b._mainSkin = _defaultSkin;
             b._startX = startX;
             b._startY = startY;
 
@@ -155,13 +127,11 @@ namespace UrGUI.UWindow
         internal void Draw()
         {
             // check if this window is enabled
-            if (!IsEnabled) return;
+            if (!IsDrawing) return;
             
-            // check if ini finished
-            if (!_isIniDone) return;
-
             // load skin
-            GUI.skin = _mainSkin;
+            if (ActiveSkin != null)
+                GUI.skin = ActiveSkin;
             
             // disable if it's required
             if (AllWindowsDisabled) GUI.enabled = false;
@@ -218,8 +188,8 @@ namespace UrGUI.UWindow
             GUI.Box(new Rect(X, Y, Width, 25f), WindowTitle);
             //nextControlY += controlSpace; // add more space between title and first control
 
-            if (_mainSkin != null)
-                GUI.skin = _mainSkin;
+            if (ActiveSkin != null)
+                GUI.skin = ActiveSkin;
 
             // draw controls
             foreach (var c in _controls)
@@ -329,7 +299,7 @@ namespace UrGUI.UWindow
         public bool LoadSkin(GUISkin mainSkin)
         {
             if (mainSkin == null) return false;
-            this._mainSkin = mainSkin;
+            this.ActiveSkin = mainSkin;
 
             return true;
         }
@@ -387,6 +357,37 @@ namespace UrGUI.UWindow
             
             return true;
         }
+
+        /// <summary>
+        /// Restores default skin
+        /// </summary>
+        /// <returns>True if successful</returns>
+        public bool RestoreDefaultSkin()
+        {
+            if (DefaultSkin == null) return false;
+            ActiveSkin = DefaultSkin;
+            return true;
+        }
+        
+        /// <summary>
+        /// Restores default skin to all existing windows
+        /// </summary>
+        /// <returns>True if successful</returns>
+        public static bool RestoreGlobalDefaultSkin()
+        {
+            return LoadGlobalSkin_internal(DefaultSkin);
+        }
+
+        /// <summary>
+        /// Loads skin to all existing windows
+        /// </summary>
+        /// <param name="skin"></param>
+        /// <returns>True if successful</returns>
+        public static bool LoadGlobalSkin(GUISkin skin)
+        {
+            return LoadGlobalSkin_internal(skin);
+        }
+            
         #endregion
         
         #region CONTROLS

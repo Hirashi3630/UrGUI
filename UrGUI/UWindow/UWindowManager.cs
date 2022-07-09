@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using System.Linq;
 using static UrGUI.Utils.Logger;
+using UnityEngine;
 
 namespace UrGUI.UWindow
 {
@@ -17,6 +20,7 @@ namespace UrGUI.UWindow
         public static UWindowManagerBehaviour BManager = null;
 
         public static bool IsDrawing { get; set; } = true;
+        public static GUISkin DefaultSkin { get; internal set; } = null;
 
         // ------- dialog ------- 
         public static bool AllWindowsDisabled = false;
@@ -26,11 +30,11 @@ namespace UrGUI.UWindow
         public static readonly Vector2 DynamicWindowsMargin = Vector2.one * 10f;
         private static Vector2 _dynamicWindowsNext = Vector2.one * 10;
         
-        public static void Register(UWindow win)
+        internal static void Register(UWindow win)
         {
             if (Windows == null) Windows = new List<UWindow>();
             
-            if (BManager == null || BManagerG == null) InstantiateNewBManager(); 
+            if (BManager == null || BManagerG == null) InitializeManager();
             
             // generate new UID
             var guid = System.Guid.NewGuid().ToString();
@@ -38,6 +42,17 @@ namespace UrGUI.UWindow
             Windows.Add(win);
         }
 
+        internal static bool LoadGlobalSkin_internal(GUISkin skin)
+        {
+            if (skin == null) return false;
+            foreach (var w in Windows)
+            {
+                w.LoadSkin(skin);
+            }
+
+            return true;
+        }
+        
         public static Vector2 GetDynamicWindowPos(float currentWidth)
         {
             // returns current and adds margin for the next one
@@ -48,7 +63,24 @@ namespace UrGUI.UWindow
             return current;
         }
         
-        public static void OnBehaviourGUI()
+        internal static void BringUWindowToFront(UWindow win)
+        {
+            // "front" means last to render
+            Windows.Remove(win);
+            Windows.Add(win);
+        }
+        
+        private static int GetIndexByGuid(string guid)
+        {
+            return Windows.FindIndex((win) => win.WinGuid == guid);
+        }
+        
+        private static UWindow GetUWinByGuid(string guid)
+        {
+            return Windows.FirstOrDefault(w => w.WinGuid == guid);
+        }
+        
+        internal static void OnBehaviourGUI()
         {
             if (!IsDrawing) return;
             
@@ -63,35 +95,12 @@ namespace UrGUI.UWindow
                 ActiveOptionMenu();
         }
 
-        public static void BringUWindowToFront(UWindow win)
-        {
-            // "front" means last to render
-            Windows.Remove(win);
-            Windows.Add(win);
-        }
-        
-        // public static void BringUWindowToFront(string guid)
-        // {
-        //     var win = GetUWinByGuid(guid);
-        //     Windows.RemoveAll(p => p.WinGuid == guid);
-        //     Windows.Insert(0, win);
-        // }
-
-        private static int GetIndexByGuid(string guid)
-        {
-            return Windows.FindIndex((win) => win.WinGuid == guid);
-        }
-        
-        private static UWindow GetUWinByGuid(string guid)
-        {
-            return Windows.FirstOrDefault(w => w.WinGuid == guid);
-        }
-        
-        private static void InstantiateNewBManager()
+        private static void InitializeManager()
         {
             BManagerG = new GameObject("UrGUI Manager");
             BManager = BManagerG.AddComponent<UWindowManagerBehaviour>();
+
+            UWindowManagerBehaviour.Instance.LoadDefaultSkin();
         }
-        
     }
 }
