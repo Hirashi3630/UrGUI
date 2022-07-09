@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UrGUI.Utils;
 using UrGUI.UWindow.Utils;
@@ -8,7 +9,7 @@ using static UrGUI.UWindow.UWindowManager;
 
 namespace UrGUI.UWindow
 {
-    internal static class GUIWindowControls
+    internal static class UWindowControls
     {
         internal class WLabel : WControl
         {
@@ -142,7 +143,7 @@ namespace UrGUI.UWindow
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUIControl.LabelSlider(r, DisplayedString, Value, _min, _max, _numberIndicator, _numberIndicatorFormat, _labelOnLeft, 5f);
+                var newValue = UControls.LabelSlider(r, DisplayedString, Value, _min, _max, _numberIndicator, _numberIndicatorFormat, _labelOnLeft, 5f);
                 
                 // handle onChangedValue event 
                 if (!newValue.Equals(Value))
@@ -188,7 +189,7 @@ namespace UrGUI.UWindow
 
             internal override void Draw(Rect r)
             {
-                var newValue = GUIControl.LabelTextField(r, DisplayedString, Value, _maxSymbolLength, _regexReplace, _labelOnLeft);
+                var newValue = UControls.LabelTextField(r, DisplayedString, Value, _maxSymbolLength, _regexReplace, _labelOnLeft);
 
                 // remove everything that matches regex
                 if (_regexReplace != string.Empty) 
@@ -238,7 +239,7 @@ namespace UrGUI.UWindow
 
             internal override void Draw(Rect r)
             {
-                var stringResult = GUIControl.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft);
+                var stringResult = UControls.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft);
 
                 // remove everything that matches regex
                 if (_regexReplace != string.Empty) 
@@ -294,7 +295,7 @@ namespace UrGUI.UWindow
             internal override void Draw(Rect r)
             {
                 // create TextField and replace all symbols that are not numbers or ',' / '.'
-                var stringResult = GUIControl.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft, 5f);
+                var stringResult = UControls.LabelTextField(r, DisplayedString, Value.ToString(), _maxSymbolLength, _regexReplace, _labelOnLeft, 5f);
 
                 // remove everything that matches regex
                 if (_regexReplace != string.Empty) 
@@ -330,7 +331,7 @@ namespace UrGUI.UWindow
 
         internal class WColorPicker : WControl
         {
-            public Color Value;
+            public Color CurrentColor;
 
             private readonly System.Action<Color> _onValueChanged;
             private bool IsPickerOpen { get => _isPickerOpen; set
@@ -338,23 +339,32 @@ namespace UrGUI.UWindow
                     _isPickerOpen = value;
                     AllWindowsDisabled = value;
                     if (value)
+                    {
                         ActiveOptionMenu = DrawPicker;
+                        _revertColor = CurrentColor; // save value
+                    }
                     else
                         ActiveOptionMenu = null;
                 }
             }
             private bool _isPickerOpen = false;
-            private Rect _rect; 
+            private Rect _rect;
+            private readonly float _controlHeight;
 
+            private Color _revertColor;
+            
             private readonly GUIStyle _whiteButtonGUIStyle = new GUIStyle
                 { normal = new GUIStyleState { background = Texture2D.whiteTexture } };
             
             internal WColorPicker(System.Action<Color> onValueChanged, Color clr,
-                string displayedString)
+                string displayedString, float controlHeight)
                 : base(displayedString)
             {
                 this._onValueChanged = onValueChanged;
-                this.Value = clr;
+                this.CurrentColor = clr;
+                this._controlHeight = controlHeight;
+                
+                this._revertColor = CurrentColor;
             }
 
             internal override void Draw(Rect r)
@@ -375,9 +385,11 @@ namespace UrGUI.UWindow
                 if (drawLabel)
                     GUI.Label(labelRect, DisplayedString);
                 
+                // draw highlight
+
                 // draw preview button
                 var oldColor = GUI.color;
-                GUI.color = Value;
+                GUI.color = CurrentColor;
                 if (UGUI.Button(previewButtonRect, string.Empty, _whiteButtonGUIStyle))
                     IsPickerOpen = !IsPickerOpen;
                 
@@ -389,30 +401,37 @@ namespace UrGUI.UWindow
             internal void DrawPicker()
             {
                 float sliderWidth = 200;
-                float sliderHeight = 22;
-                Color newValue = GUIControl.ColorPicker(
+                    var newColor = CurrentColor;
+                var revert = UControls.ColorPicker(
                     new Vector2(_rect.x + _rect.width - sliderWidth, _rect.y + _rect.height),
-                    Value, true, sliderWidth, sliderHeight);
+                    ref newColor, true, sliderWidth, _controlHeight, 5, 5);
+
+                // revert color and close dialog
+                if (revert)
+                {
+                    newColor = _revertColor;
+                    IsPickerOpen = false;
+                }
 
                 // handle event
-                if (newValue != Value)
-                    _onValueChanged.Invoke(newValue);
+                if (newColor != CurrentColor)
+                    _onValueChanged.Invoke(newColor);
 
-                Value = newValue;
+                CurrentColor = newColor;
             }
 
             internal override void ExportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ExportData(id, sectionName, keyBaseName, ini);
 
-                ini.WriteValue(sectionName, keyBaseName + "color", Value);
+                ini.WriteValue(sectionName, keyBaseName + "color", CurrentColor);
             }
 
             internal override void ImportData(int id, string sectionName, string keyBaseName, INIParser ini)
             {
                 base.ImportData(id, sectionName, keyBaseName, ini);
 
-                Value = ini.ReadValue(sectionName, keyBaseName + "color", Value);
+                CurrentColor = ini.ReadValue(sectionName, keyBaseName + "color", CurrentColor);
             }
         }
 
@@ -489,7 +508,7 @@ namespace UrGUI.UWindow
 
             internal void DrawDropDown()
             {
-                var newValue = GUIControl.DropDown(new Vector2(_selectedRect.x, _selectedRect.y + _selectedRect.height),
+                var newValue = UControls.DropDown(new Vector2(_selectedRect.x, _selectedRect.y + _selectedRect.height),
                     ValuesList, _scrollPos, out _scrollPos, out bool isOpen, _dropDownOptionGUIStyle, true, _selectedRect.width);
 
                 // handle event
@@ -539,7 +558,7 @@ namespace UrGUI.UWindow
                 // var rLine = new Rect(r.x, r.y, r.width, _lineThickness); // up
                 var rLine = new Rect(r.x, r.y + (r.height / 2f) - (_lineThickness / 2f), r.width, _lineThickness); // middle
 
-                GUIControl.ColoredBox(rLine, clr);
+                UControls.ColoredBox(rLine, clr);
             }
         }
         

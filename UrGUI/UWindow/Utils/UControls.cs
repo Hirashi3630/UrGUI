@@ -4,7 +4,10 @@ using UrGUI.Utils;
 
 namespace UrGUI.UWindow.Utils
 {
-    public static class GUIControl
+    /// <summary>
+    /// Custom controls used by UWindow
+    /// </summary>
+    public static class UControls
     {
         /// <summary>Named HorizontalSlider control</summary>
         /// <param name="rect">Full Rect of whole control</param>
@@ -81,44 +84,53 @@ namespace UrGUI.UWindow.Utils
 
         /// <summary>RGBA Color Picker dialog using LabelSlider</summary>
         /// <param name="leftTopCorner">Position of left top corner</param>
-        /// <param name="value">The value the color picker shows</param>
+        /// <param name="color">The value the color picker shows</param>
         /// <param name="mainBoxColoredTexture">if true, drawing black colored texture instead of box</param>
         /// <param name="sliderWidth">Width of individual sliders</param>
-        /// <param name="sliderHeight">Height of individual sliders</param>
+        /// <param name="controlHeight">Height of individual sliders</param>
         /// <param name="offsetY">Pixel offset between sliders</param>
         /// <param name="margin">Pixel offset from each side</param>
-        /// <returns></returns>
-        public static Color ColorPicker(Vector2 leftTopCorner, Color value,
-            bool mainBoxColoredTexture = false, float sliderWidth = 200f, float sliderHeight = 22f, float offsetY = 5f, float margin = 5f)
+        /// <returns>True if cancel button has been pressed</returns>
+        public static bool ColorPicker(Vector2 leftTopCorner, ref Color color,
+            bool mainBoxColoredTexture = false, float sliderWidth = 200f, float controlHeight = 12f, float offsetY = 5f, float margin = 5f)
         {
             // calculate width of label
             float labelWidth = GUIFormatting.GetContentStringSize("X: ").x;
 
-            // main box
-            Rect mainRect = new Rect(leftTopCorner.x, leftTopCorner.y, // x, y 
+            // calculate rects
+            var mainRect = new Rect(leftTopCorner.x, leftTopCorner.y, // x, y 
                 (labelWidth + sliderWidth) + (margin * 2f), // width -> 'margin * 2' = margin from both sides
-                (sliderHeight * 4) + (offsetY * 3f) + (margin * 2f)); // height -> '* 4f' = 4 sliders (RGBA); '* 3f' = 3 spaces between sliders
-            Rect controlsRect = new Rect(leftTopCorner.x + margin, leftTopCorner.y + margin, // x, y
+                (controlHeight * 4) + (offsetY * 3f) + (margin * 2f)); // height -> '* 4f' = 4 sliders (RGBA); '* 3f' = 3 spaces between sliders
+            var controlsRect = new Rect(leftTopCorner.x + margin, leftTopCorner.y + margin, // x, y
                 labelWidth + sliderWidth, // width
-                (sliderHeight * 4) + (offsetY * 3f)); // height
+                (controlHeight * 4) + (offsetY * 3f)); // height
             // draw main box
             if (mainBoxColoredTexture)
                 ColoredBox(mainRect, Color.black);
             else
                 GUI.Box(mainRect, "");
 
+            // draw cancel button
+            var cancelRect = new Rect(
+                mainRect.x, mainRect.y - controlHeight,
+                mainRect.width / 3f, controlHeight);
+            if (UGUI.Button(cancelRect, "Cancel"))
+                return true;
+            
             // inside
             GUI.BeginGroup(controlsRect);
 
             // draw label sliders
-            var newValue = value;
-            newValue.r = LabelSlider(new Rect(0, (sliderHeight * 0) + (offsetY * 0), controlsRect.width, sliderHeight), "R: ", value.r, 0f, 1f);
-            newValue.g = LabelSlider(new Rect(0, (sliderHeight * 1) + (offsetY * 1), controlsRect.width, sliderHeight), "G: ", value.g, 0f, 1f);
-            newValue.b = LabelSlider(new Rect(0, (sliderHeight * 2) + (offsetY * 2), controlsRect.width, sliderHeight), "B: ", value.b, 0f, 1f);
-            newValue.a = LabelSlider(new Rect(0, (sliderHeight * 3) + (offsetY * 3), controlsRect.width, sliderHeight), "A: ", value.a, 0f, 1f);
+            var newColor = color;
+            newColor.r = LabelSlider(new Rect(0, (controlHeight * 0) + (offsetY * 0), controlsRect.width, controlHeight), "R: ", color.r, 0f, 1f);
+            newColor.g = LabelSlider(new Rect(0, (controlHeight * 1) + (offsetY * 1), controlsRect.width, controlHeight), "G: ", color.g, 0f, 1f);
+            newColor.b = LabelSlider(new Rect(0, (controlHeight * 2) + (offsetY * 2), controlsRect.width, controlHeight), "B: ", color.b, 0f, 1f);
+            newColor.a = LabelSlider(new Rect(0, (controlHeight * 3) + (offsetY * 3), controlsRect.width, controlHeight), "A: ", color.a, 0f, 1f);
             GUI.EndGroup();
 
-            return newValue;
+            color = newColor;
+            
+            return false;
         }
 
         /// <summary>Drop Down dialog with ScrollView</summary>

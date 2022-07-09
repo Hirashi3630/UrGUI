@@ -51,7 +51,6 @@ namespace UrGUI.UWindow
         private float _nextControlY;
         private List<WControl> _controls;
 
-
         /// <summary>
         /// Create a UWindow with dynamic position and size
         /// </summary>
@@ -516,7 +515,7 @@ namespace UrGUI.UWindow
         /// </summary>
         public void Space()
         {
-            var c = new GUIWindowControls.WSpace();
+            var c = new UWindowControls.WSpace();
             Add(c);
         }
 
@@ -527,7 +526,7 @@ namespace UrGUI.UWindow
         /// <param name="alignment">alignment inside of control box</param>
         public void Label(string text)
         {
-            var c = new GUIWindowControls.WLabel(text);
+            var c = new UWindowControls.WLabel(text);
             Add(c);
         }
 
@@ -538,7 +537,7 @@ namespace UrGUI.UWindow
         /// <param name="onPressed"></param>
         public void Button(string text, System.Action onPressed)
         {
-            var c = new GUIWindowControls.WButton(onPressed, text);
+            var c = new UWindowControls.WButton(onPressed, text);
             Add(c);
         }
 
@@ -551,7 +550,7 @@ namespace UrGUI.UWindow
         public void Toggle(string text, System.Action<bool> onValueChanged,
             bool value = false)
         {
-            var c = new GUIWindowControls.WToggle(onValueChanged, value, text);
+            var c = new UWindowControls.WToggle(onValueChanged, value, text);
             Add(c);
         }
 
@@ -568,7 +567,7 @@ namespace UrGUI.UWindow
         public void Slider(string text, System.Action<float> onValueChanged, float value, float min, float max,
             bool numberIndicator = false, string numberIndicatorFormat = "0.##")
         {
-            var c = new GUIWindowControls.WSlider(onValueChanged, value, min, max, numberIndicator,
+            var c = new UWindowControls.WSlider(onValueChanged, value, min, max, numberIndicator,
                 numberIndicatorFormat, text);
             Add(c);
         }
@@ -584,7 +583,7 @@ namespace UrGUI.UWindow
         public void TextField(string text, System.Action<string> onValueChanged, string value, int maxSymbolLength = int.MaxValue,
             string regexReplace = "")
         {
-            var c = new GUIWindowControls.WTextField(onValueChanged, value, maxSymbolLength, regexReplace, text);
+            var c = new UWindowControls.WTextField(onValueChanged, value, maxSymbolLength, regexReplace, text);
             Add(c);
         }
 
@@ -597,7 +596,7 @@ namespace UrGUI.UWindow
         /// <param name="maxSymbolLength">maximum number of characters</param>
         public void IntField(string text, System.Action<int> onValueChanged, int value, int maxSymbolLength = int.MaxValue)
         {
-            var c = new GUIWindowControls.WIntField(onValueChanged, value, maxSymbolLength, text);
+            var c = new UWindowControls.WIntField(onValueChanged, value, maxSymbolLength, text);
             Add(c);
         }
         
@@ -610,7 +609,7 @@ namespace UrGUI.UWindow
         /// <param name="maxSymbolLength">maximum number of characters</param>
         public void FloatField(string text, System.Action<float> onValueChanged, float value, int maxSymbolLength = int.MaxValue)
         {
-            var c = new GUIWindowControls.WFloatField(onValueChanged, value, maxSymbolLength, text);
+            var c = new UWindowControls.WFloatField(onValueChanged, value, maxSymbolLength, text);
             Add(c);
         }
 
@@ -622,7 +621,7 @@ namespace UrGUI.UWindow
         /// <param name="value">default value</param>
         public void ColorPicker(string text, System.Action<Color> onValueChanged, Color value)
         {
-            var c = new GUIWindowControls.WColorPicker(onValueChanged, value, text);
+            var c = new UWindowControls.WColorPicker(onValueChanged, value, text, _controlHeight);
             Add(c);
         }
 
@@ -635,7 +634,7 @@ namespace UrGUI.UWindow
         /// <param name="list">list that holds all possible values</param>
         public void DropDown(string text, System.Action<int> onValueChanged, int value, Dictionary<int, string> list)
         {
-            var c = new GUIWindowControls.WDropDown(onValueChanged, value, list, text);
+            var c = new UWindowControls.WDropDown(onValueChanged, value, list, text);
             Add(c);
         }
 
@@ -648,7 +647,7 @@ namespace UrGUI.UWindow
         {
             if (lineColor == default(Color))
                 lineColor = new Color(1, 1, 1, .9f);
-            var c = new GUIWindowControls.WSeparator(lineColor,lineThickness);
+            var c = new UWindowControls.WSeparator(lineColor,lineThickness);
             Add(c);
         }
 

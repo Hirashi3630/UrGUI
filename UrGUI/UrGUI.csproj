@@ -62,8 +62,8 @@
   <ItemGroup>
     <Compile Include="Utils\UGUI.cs" />
     <Compile Include="UWindow\UWindow.cs" />
-    <Compile Include="UWindow\GUIWindowControls.cs" />
-    <Compile Include="UWindow\Utils\GUIControl.cs" />
+    <Compile Include="UWindow\UWindowControls.cs" />
+    <Compile Include="UWindow\Utils\UControls.cs" />
     <Compile Include="UWindow\Utils\GUIFormatting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Logger.cs" />
