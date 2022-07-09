@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UrGUI.Utils;
 
 namespace UrGUI.UWindow.Utils
 {
@@ -157,7 +158,7 @@ namespace UrGUI.UWindow.Utils
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (GUI.Button(new Rect(margin, i * optionHeight, mainRect.width - margin - 15, optionHeight),
+                if (UGUI.Button(new Rect(margin, i * optionHeight, mainRect.width - margin - 15, optionHeight),
                         list[i], optionGUIStyle)) // 15 is width of scrollbar
                 {
                     newValue = i;

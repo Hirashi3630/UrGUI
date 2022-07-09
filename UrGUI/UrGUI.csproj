@@ -60,13 +60,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GUIWindow\GUIWindow.cs" />
-    <Compile Include="GUIWindow\GUIWindowControls.cs" />
-    <Compile Include="GUIWindow\Utils\GUIControl.cs" />
-    <Compile Include="GUIWindow\Utils\GUIFormatting.cs" />
+    <Compile Include="Utils\UGUI.cs" />
+    <Compile Include="UWindow\UWindow.cs" />
+    <Compile Include="UWindow\GUIWindowControls.cs" />
+    <Compile Include="UWindow\Utils\GUIControl.cs" />
+    <Compile Include="UWindow\Utils\GUIFormatting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\INIParser.cs" />
+    <Compile Include="UWindow\UWindowManager.cs" />
+    <Compile Include="UWindow\UWindowManagerBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Skins\main" />

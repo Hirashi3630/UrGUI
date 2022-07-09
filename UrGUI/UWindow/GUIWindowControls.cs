@@ -62,7 +62,7 @@ namespace UrGUI.UWindow
 
             internal override void Draw(Rect r)
             {
-                if (GUI.Button(r, DisplayedString))
+                if (UGUI.Button(r, DisplayedString))
                     _onPressed();
             }
         }
@@ -378,7 +378,7 @@ namespace UrGUI.UWindow
                 // draw preview button
                 var oldColor = GUI.color;
                 GUI.color = Value;
-                if (GUI.Button(previewButtonRect, string.Empty, _whiteButtonGUIStyle))
+                if (UGUI.Button(previewButtonRect, string.Empty, _whiteButtonGUIStyle))
                     IsPickerOpen = !IsPickerOpen;
                 
                 if (AllWindowsDisabled && IsPickerOpen) GUI.enabled = false;
@@ -481,7 +481,7 @@ namespace UrGUI.UWindow
                 if (!string.IsNullOrEmpty(DisplayedString))
                     GUI.Label(labelRect, DisplayedString);
                 
-                if (GUI.Button(_selectedRect, selectedText))
+                if (UGUI.Button(_selectedRect, selectedText))
                     IsDropDownOpen = !IsDropDownOpen;
                 //GUI.Label(selectedLabelRect, selectedText);
                 if (AllWindowsDisabled && IsDropDownOpen) GUI.enabled = false;
