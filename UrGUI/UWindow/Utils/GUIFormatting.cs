@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UrGUI.Windows.Utils
+namespace UrGUI.UWindow.Utils
 {
     public static class GUIFormatting
     {

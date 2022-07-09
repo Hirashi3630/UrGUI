@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UrGUI.Windows.Utils;
 
 namespace UrGUI.UWindow.Utils
 {

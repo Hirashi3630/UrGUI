@@ -16,6 +16,8 @@ namespace UrGUI.UWindow
         public static GameObject BManagerG = null;
         public static UWindowManagerBehaviour BManager = null;
 
+        public static bool IsDrawing { get; set; } = true;
+
         // ------- dialog ------- 
         public static bool AllWindowsDisabled = false;
         public static bool AnyWindowDragging = false;
@@ -48,6 +50,8 @@ namespace UrGUI.UWindow
         
         public static void OnBehaviourGUI()
         {
+            if (!IsDrawing) return;
+            
             foreach (var w in Windows)
             {
                 // draw window

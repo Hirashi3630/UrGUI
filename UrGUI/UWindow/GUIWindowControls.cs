@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UrGUI.Utils;
 using UrGUI.UWindow.Utils;
-using UrGUI.Windows.Utils;
 using static UrGUI.Utils.Logger;
 using static UrGUI.UWindow.UWindowManager;
 
-namespace UrGUI.Windows
+namespace UrGUI.UWindow
 {
     internal static class GUIWindowControls
     {
-        
-        
         internal class WLabel : WControl
         {
             private Rect _rect = new Rect();
@@ -89,7 +86,6 @@ namespace UrGUI.Windows
             internal override void Draw(Rect r)
             {
                 // calculations consider that toggle box is 1:1 ratio (r.height : r.height)
-                bool newValue = Value;
                 Rect rToggle = r;
                 if (_toggleStyle == null)
                     _toggleStyle = new GUIStyle(GUI.skin.toggle); 
@@ -99,7 +95,7 @@ namespace UrGUI.Windows
                 int overValue = Mathf.RoundToInt(r.width - r.height);
                 _toggleStyle.overflow.left = -overValue;
                 _toggleStyle.overflow.right = overValue;
-                newValue = GUI.Toggle(rToggle, Value, string.Empty, _toggleStyle);
+                var newValue = GUI.Toggle(rToggle, Value, string.Empty, _toggleStyle);
                 
                 if (newValue != Value)
                     OnValueChanged(newValue);

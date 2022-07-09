@@ -25,7 +25,7 @@ namespace UrGUI.Utils
 #if DEBUG
         private static PrintType _debugFilter = PrintType.Error | PrintType.Warnings | PrintType.Info; // debug
 #else
-        private static PrintType _debugFilter = PrintType.Error | PrintType.Warnings | PrintType.Info; // release
+        private static PrintType _debugFilter = PrintType.Error | PrintType.Warnings; // release
 #endif
 
         
