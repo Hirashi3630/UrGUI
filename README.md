@@ -14,7 +14,7 @@
     <img src="Assets/Media/complete_showcase.gif?raw=true" alt="usage-sample1">
   </a>
 <br>
-  <a href="UrGUI.Examples/">Examples</a>
+  
 </p>
 
 <br>
@@ -67,6 +67,8 @@ private void OnGUI()
   ```
 
 </blockquote></details>
+
+<a href="UrGUI.Examples/">More Examples</a>
 
 <br>
 

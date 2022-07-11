@@ -66,7 +66,7 @@ public class CreateAssetBundles
 ## Featured skins
 
 ### [default](default/)<br>
-<img src="../Assets/Skins/Media/default-guiwindowexample1.png?raw=true" alt="default-guiwindowexample1">
+<img src="../Assets/Media/complete_showcase.gif?raw=true" alt="default-guiwindowexample1">
 
 <!--
 ### [ocornut](legacy/ocornut/)<br>
